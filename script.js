@@ -11,7 +11,23 @@ function loadProducts() {
     const stored = localStorage.getItem('tomtechProducts');
     if (stored) {
         try {
-            return JSON.parse(stored);
+            const storedProducts = JSON.parse(stored);
+            // Merge with default products to ensure fullDescription and importance exist
+            const defaultProducts = getDefaultProducts();
+            return storedProducts.map(storedProduct => {
+                const defaultProduct = defaultProducts.find(dp => dp.id === storedProduct.id || dp.name === storedProduct.name);
+                if (defaultProduct) {
+                    // Merge stored product with default product, keeping stored product's data but adding missing fields
+                    return {
+                        ...defaultProduct,
+                        ...storedProduct,
+                        // Keep fullDescription and importance from default if not in stored
+                        fullDescription: storedProduct.fullDescription || defaultProduct.fullDescription,
+                        importance: storedProduct.importance || defaultProduct.importance
+                    };
+                }
+                return storedProduct;
+            });
         } catch (e) {
             console.error('Error loading products:', e);
         }
@@ -28,7 +44,9 @@ function getDefaultProducts() {
             name: 'OBD II(16PIN)',
             price: 2700,
             image: 'images/products/IMG-20251230-WA0027.jpg',
-            description: 'Universal 16-pin OBD II diagnostic cable compatible with all modern vehicles. Read and clear engine codes, monitor real-time data, and perform comprehensive vehicle diagnostics. Perfect for DIY mechanics and professional technicians. Easy plug-and-play installation!',
+            description: 'Universal 16-pin OBD II diagnostic cable compatible with all modern vehicles. Read and clear engine codes, monitor real-time data, and perform comprehensive vehicle diagnostics.',
+            fullDescription: 'Universal 16-pin OBD II diagnostic cable compatible with all modern vehicles manufactured after 1996. This essential tool allows you to read and clear engine codes, monitor real-time data, and perform comprehensive vehicle diagnostics.\n\n**Why It\'s Important:**\n• **Save Money on Diagnostics:** Avoid expensive mechanic fees by diagnosing issues yourself\n• **Prevent Major Repairs:** Early detection of problems prevents costly breakdowns\n• **Maintain Vehicle Health:** Regular diagnostics keep your engine running efficiently\n• **DIY Friendly:** Easy plug-and-play installation - no technical expertise needed\n• **Universal Compatibility:** Works with all OBD II compliant vehicles (1996 and newer)\n• **Real-Time Monitoring:** Track engine performance, fuel economy, and emissions data\n\n**Perfect For:** DIY mechanics, car enthusiasts, and anyone who wants to understand their vehicle better. Essential for maintaining your car\'s performance and catching issues before they become expensive repairs.',
+            importance: 'Essential diagnostic tool that saves money on mechanic fees and helps maintain vehicle health.',
             availability: 'in_stock',
             featured: false
         },
@@ -37,7 +55,9 @@ function getDefaultProducts() {
             name: 'AUTEL OBDII CABLE',
             price: 4500,
             image: 'images/products/IMG-20251230-WA0028.jpg',
-            description: 'Premium AUTEL OBDII diagnostic cable with advanced features. Compatible with AUTEL diagnostic scanners for professional-grade vehicle analysis. Access deep system diagnostics, ECU programming, and advanced functions. High-quality construction ensures reliable performance!',
+            description: 'Premium AUTEL OBDII diagnostic cable with advanced features. Compatible with AUTEL diagnostic scanners for professional-grade vehicle analysis.',
+            fullDescription: 'Premium AUTEL OBDII diagnostic cable designed for professional-grade vehicle analysis. This high-quality cable is specifically engineered for AUTEL diagnostic scanners, providing access to deep system diagnostics, ECU programming, and advanced functions.\n\n**Why It\'s Important:**\n• **Professional Diagnostics:** Access advanced diagnostic functions beyond basic OBD II\n• **ECU Programming:** Essential for ECU tuning, programming, and modifications\n• **Deep System Access:** Read ABS, SRS, transmission, and other system codes\n• **Reliable Performance:** High-quality construction ensures consistent, error-free connections\n• **Professional Grade:** Used by automotive technicians and ECU specialists\n• **Future-Proof:** Compatible with latest AUTEL scanner models and software updates\n• **Cost Effective:** One-time investment saves thousands on professional diagnostic services\n\n**Perfect For:** Professional mechanics, ECU tuners, and serious automotive enthusiasts who need advanced diagnostic capabilities. Essential for anyone performing ECU programming or deep vehicle diagnostics.',
+            importance: 'Professional-grade cable essential for advanced diagnostics and ECU programming.',
             availability: 'in_stock',
             featured: false
         },
@@ -46,7 +66,9 @@ function getDefaultProducts() {
             name: 'LAUNCH(16 PIN)CABLE',
             price: 3500,
             image: 'images/products/IMG-20251230-WA0029.jpg',
-            description: 'Professional LAUNCH 16-pin diagnostic cable for comprehensive vehicle scanning. Compatible with LAUNCH diagnostic tools for ECU programming, key programming, and system diagnostics. Durable design with premium connectors for long-lasting performance!',
+            description: 'Professional LAUNCH 16-pin diagnostic cable for comprehensive vehicle scanning. Compatible with LAUNCH diagnostic tools for ECU programming and key programming.',
+            fullDescription: 'Professional LAUNCH 16-pin diagnostic cable engineered for comprehensive vehicle scanning and advanced diagnostics. This premium cable is specifically designed for LAUNCH diagnostic tools, enabling ECU programming, key programming, and complete system diagnostics.\n\n**Why It\'s Important:**\n• **Key Programming:** Essential for programming car keys and remotes - saves hundreds on dealer services\n• **ECU Functions:** Access ECU programming, tuning, and modification capabilities\n• **Complete Diagnostics:** Scan all vehicle systems including engine, transmission, ABS, and airbags\n• **Professional Quality:** Durable design with premium connectors ensures reliable, long-lasting performance\n• **LAUNCH Compatibility:** Specifically designed for LAUNCH diagnostic scanners\n• **Multi-System Access:** Read codes from all vehicle modules, not just engine\n• **Investment Protection:** High-quality cable protects your expensive diagnostic equipment\n\n**Perfect For:** Automotive professionals, key programming specialists, and technicians who need reliable access to all vehicle systems. Essential for anyone offering key programming or ECU services.',
+            importance: 'Critical tool for key programming and comprehensive vehicle diagnostics.',
             availability: 'in_stock',
             featured: false
         },
@@ -55,7 +77,9 @@ function getDefaultProducts() {
             name: 'CAR IMAGE SYSTEM',
             price: 4500,
             image: 'images/products/IMG-20251230-WA0030.jpg',
-            description: 'Advanced car imaging and backup camera system. Enhance your vehicle safety with high-quality rearview cameras, parking sensors, and multi-camera setups. Easy installation with plug-and-play design. Perfect visibility in all conditions - day or night!',
+            description: 'Advanced car imaging and backup camera system. Enhance your vehicle safety with high-quality rearview cameras and parking sensors.',
+            fullDescription: 'Advanced car imaging and backup camera system designed to significantly enhance your vehicle safety and driving confidence. This comprehensive system includes high-quality rearview cameras, parking sensors, and multi-camera setups for complete visibility.\n\n**Why It\'s Important:**\n• **Prevent Accidents:** Eliminate blind spots and prevent costly collisions while reversing\n• **Protect Your Vehicle:** Avoid expensive bodywork repairs from parking mishaps\n• **Insurance Benefits:** Reduce accident risk may lower insurance premiums\n• **Night Vision:** High-quality cameras provide clear visibility in all lighting conditions\n• **Parking Confidence:** Park safely in tight spaces without fear of hitting obstacles\n• **Multi-Camera Setup:** Optional front and side cameras for 360-degree visibility\n• **Easy Installation:** Plug-and-play design makes installation simple\n• **Peace of Mind:** Know exactly what\'s behind you before reversing\n\n**Perfect For:** All drivers, especially those with larger vehicles, families with children, and anyone who wants enhanced safety. Essential for preventing costly accidents and protecting your investment.',
+            importance: 'Prevents accidents and expensive repairs while providing peace of mind.',
             availability: 'in_stock',
             featured: false
         },
@@ -64,7 +88,9 @@ function getDefaultProducts() {
             name: 'CATALYTIC CONVERTER',
             price: 6500,
             image: 'images/products/IMG-20251230-WA0031.jpg',
-            description: 'High-performance catalytic converter replacement. Restore your vehicle\'s exhaust efficiency and reduce harmful emissions. Compatible with multiple vehicle models. Improve fuel economy and engine performance. Professional installation available!',
+            description: 'High-performance catalytic converter replacement. Restore your vehicle\'s exhaust efficiency and reduce harmful emissions.',
+            fullDescription: 'High-performance catalytic converter replacement designed to restore your vehicle\'s exhaust efficiency and significantly reduce harmful emissions. This essential component is compatible with multiple vehicle models and directly impacts fuel economy and engine performance.\n\n**Why It\'s Important:**\n• **Fix Check Engine Light:** Resolve emission-related error codes and pass inspections\n• **Improve Fuel Economy:** Restore proper exhaust flow increases MPG by 5-15%\n• **Restore Engine Power:** Clogged converters reduce power - replacement restores performance\n• **Legal Compliance:** Required for vehicle registration and emissions testing\n• **Environmental Responsibility:** Reduce harmful emissions and protect the environment\n• **Prevent Engine Damage:** Failed converters can cause backpressure and engine issues\n• **Cost Savings:** Better fuel economy saves money on gas over time\n• **Vehicle Value:** Properly functioning exhaust system maintains resale value\n\n**Perfect For:** Vehicles with check engine lights, failed emissions tests, or reduced performance. Essential for maintaining legal compliance and optimal engine efficiency.',
+            importance: 'Restores engine performance, improves fuel economy, and ensures legal compliance.',
             availability: 'in_stock',
             featured: false
         },
@@ -73,7 +99,9 @@ function getDefaultProducts() {
             name: 'CENTRAL DOOR LOCKING SYSTEM',
             price: 3500,
             image: 'images/products/IMG-20251230-WA0032.jpg',
-            description: 'Complete central door locking system with remote control. Lock and unlock all doors simultaneously with the push of a button. Includes key fob, actuators, and wiring. Easy installation for most vehicles. Enhance security and convenience for your car!',
+            description: 'Complete central door locking system with remote control. Lock and unlock all doors simultaneously with the push of a button.',
+            fullDescription: 'Complete central door locking system with advanced remote control functionality. This comprehensive kit includes key fob, actuators, wiring, and all necessary components to upgrade your vehicle with modern convenience and enhanced security.\n\n**Why It\'s Important:**\n• **Enhanced Security:** Lock all doors instantly with one button - prevents theft and break-ins\n• **Convenience:** No more manually locking each door - save time and effort\n• **Safety Feature:** Quickly lock all doors in emergency situations\n• **Modern Upgrade:** Transform older vehicles with modern convenience features\n• **Remote Access:** Lock/unlock from distance - perfect for checking if doors are secure\n• **Child Safety:** Prevent children from accidentally opening doors while driving\n• **Vehicle Value:** Modern locking system increases resale value\n• **Peace of Mind:** Know your vehicle is secure with the push of a button\n\n**Perfect For:** Older vehicles without central locking, vehicles with broken locking systems, and anyone wanting modern convenience. Essential for enhanced security and daily convenience.',
+            importance: 'Enhances vehicle security and provides modern convenience features.',
             availability: 'in_stock',
             featured: false
         },
@@ -82,7 +110,9 @@ function getDefaultProducts() {
             name: 'CAR ALARM SYSTEM',
             price: 6500,
             image: 'images/products/IMG-20251230-WA0033.jpg',
-            description: 'Premium car alarm system with motion sensors, shock sensors, and remote control. Loud 120dB siren alerts you to any unauthorized access. Includes keyless entry, remote start capability, and anti-theft protection. Professional installation ensures maximum security for your vehicle!',
+            description: 'Premium car alarm system with motion sensors, shock sensors, and remote control. Loud 120dB siren alerts you to unauthorized access.',
+            fullDescription: 'Premium car alarm system featuring advanced motion sensors, shock sensors, and comprehensive remote control. This professional-grade security system includes a loud 120dB siren, keyless entry, remote start capability, and multi-layer anti-theft protection.\n\n**Why It\'s Important:**\n• **Theft Prevention:** Deter thieves with loud alarm and visible security system\n• **Protect Your Investment:** Vehicles are valuable assets - protect them from theft and vandalism\n• **Insurance Benefits:** Many insurance companies offer discounts for installed alarm systems\n• **Peace of Mind:** Know your vehicle is protected 24/7, even when you\'re away\n• **Remote Monitoring:** Some systems allow smartphone alerts when alarm is triggered\n• **Motion Detection:** Advanced sensors detect any movement or impact on your vehicle\n• **Keyless Entry:** Convenient access without fumbling for keys\n• **Remote Start:** Start your vehicle from distance - warm up in winter, cool down in summer\n• **Vehicle Recovery:** Some systems include GPS tracking for vehicle recovery\n\n**Perfect For:** All vehicle owners, especially those in high-theft areas, owners of valuable vehicles, and anyone who wants maximum security. Essential protection for your valuable investment.',
+            importance: 'Essential security system that protects your vehicle investment and provides peace of mind.',
             availability: 'in_stock',
             featured: false
         }
@@ -159,7 +189,9 @@ function renderProducts() {
             <div class="product-info">
                 <h3 class="product-name" onclick="openProductModal(${product.id})" style="cursor: pointer;">${product.name}</h3>
                 <p class="product-description">${product.description ? product.description.substring(0, 100) + '...' : ''}</p>
+                ${product.importance ? `<p class="product-importance">${product.importance}</p>` : ''}
                 ${product.category ? `<p class="product-category" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 8px;">${product.category}</p>` : ''}
+                <button class="btn-read-more" onclick="openProductDescriptionModal(${product.id})">Read More</button>
                 <div class="product-availability">
                     ${stockStatus}
                 </div>
@@ -1080,9 +1112,88 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeProductModal();
+            closeProductDescriptionModal();
         }
     });
 });
+
+// Product Description Modal
+function openProductDescriptionModal(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    // If no fullDescription, use description or show message
+    if (!product.fullDescription) {
+        product.fullDescription = product.description || 'No detailed description available for this product.';
+    }
+    
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('productDescriptionModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'productDescriptionModal';
+        modal.className = 'product-description-modal';
+        modal.innerHTML = `
+            <div class="product-description-modal-overlay" onclick="closeProductDescriptionModal()"></div>
+            <div class="product-description-modal-content">
+                <button class="product-description-modal-close" onclick="closeProductDescriptionModal()">&times;</button>
+                <div class="product-description-header">
+                    <img id="productDescriptionImage" src="" alt="" class="product-description-image">
+                    <div class="product-description-title-section">
+                        <h2 id="productDescriptionName" class="product-description-name"></h2>
+                        <p id="productDescriptionPrice" class="product-description-price"></p>
+                    </div>
+                </div>
+                <div id="productDescriptionContent" class="product-description-content"></div>
+                <div class="product-description-actions">
+                    <button class="btn btn-primary" onclick="addToCart(${productId}); closeProductDescriptionModal();">Add to Cart</button>
+                    <button class="btn btn-secondary" onclick="closeProductDescriptionModal()">Close</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    // Populate modal content
+    const productImage = document.getElementById('productDescriptionImage');
+    const productName = document.getElementById('productDescriptionName');
+    const productPrice = document.getElementById('productDescriptionPrice');
+    const productContent = document.getElementById('productDescriptionContent');
+    
+    if (productImage) productImage.src = product.image || product.images?.[0] || 'images/placeholder.jpg';
+    if (productName) productName.textContent = product.name;
+    if (productPrice) productPrice.textContent = `KES ${product.price.toLocaleString()}`;
+    
+    if (productContent) {
+        // Format the full description with line breaks and bold text
+        const lines = product.fullDescription.split('\n');
+        productContent.innerHTML = lines.map(line => {
+            if (line.trim().startsWith('**') && line.trim().endsWith('**')) {
+                const text = line.trim().replace(/\*\*/g, '');
+                return `<h3 class="description-section-title">${text}</h3>`;
+            } else if (line.trim().startsWith('•') || line.trim().startsWith('*')) {
+                return `<p class="description-bullet-point">${line.trim()}</p>`;
+            } else if (line.trim()) {
+                return `<p class="description-paragraph">${line.trim()}</p>`;
+            }
+            return '';
+        }).join('');
+    }
+    
+    // Show modal
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeProductDescriptionModal() {
+    const modal = document.getElementById('productDescriptionModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+window.closeProductDescriptionModal = closeProductDescriptionModal;
 
 // Make functions globally available
 window.addToCart = addToCart;
@@ -1097,6 +1208,8 @@ window.handleChatbotKeyPress = handleChatbotKeyPress;
 window.openProductModal = openProductModal;
 window.closeProductModal = closeProductModal;
 window.changeModalImage = changeModalImage;
+window.openProductDescriptionModal = openProductDescriptionModal;
+window.closeProductDescriptionModal = closeProductDescriptionModal;
 window.saveCartForLater = saveCartForLater;
 window.viewProductImage = viewProductImage;
 
