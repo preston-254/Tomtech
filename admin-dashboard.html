@@ -145,14 +145,17 @@
                     <label class="form-label">Product Images</label>
                     <div class="image-upload-area" id="imageUploadArea">
                         <input type="file" id="productImages" class="file-input" multiple accept="image/*">
-                        <div class="image-upload-placeholder">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <button type="button" class="image-upload-button" id="imageUploadButton">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                 <polyline points="17 8 12 3 7 8"></polyline>
                                 <line x1="12" y1="3" x2="12" y2="15"></line>
                             </svg>
-                            <p>Click to upload images or drag and drop</p>
-                            <p class="image-upload-hint">Multiple images allowed</p>
+                            <span>Browse Images from Phone</span>
+                            <span class="image-upload-subtitle">Tap to open folder/images</span>
+                        </button>
+                        <div class="image-upload-placeholder">
+                            <p class="image-upload-hint">You can select multiple images at once</p>
                         </div>
                         <div class="image-preview-container" id="imagePreviewContainer"></div>
                     </div>

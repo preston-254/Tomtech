@@ -174,8 +174,30 @@ function initializeModals() {
 
     // Image upload
     const imageInput = document.getElementById('productImages');
+    const imageUploadButton = document.getElementById('imageUploadButton');
+    const imageUploadArea = document.getElementById('imageUploadArea');
+    
     if (imageInput) {
         imageInput.addEventListener('change', handleImageUpload);
+    }
+    
+    // Make upload button trigger file input
+    if (imageUploadButton && imageInput) {
+        imageUploadButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            imageInput.click();
+        });
+    }
+    
+    // Also make the upload area clickable
+    if (imageUploadArea && imageInput) {
+        imageUploadArea.addEventListener('click', function(e) {
+            // Only trigger if clicking on the area itself, not on buttons or previews
+            if (e.target === imageUploadArea || e.target.classList.contains('image-upload-placeholder')) {
+                imageInput.click();
+            }
+        });
     }
 }
 
