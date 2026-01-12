@@ -132,13 +132,24 @@ async function saveProducts(products) {
     localStorage.setItem('tomtechProducts', JSON.stringify(products));
     localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
     
+    // Reload cloud sync settings from localStorage (in case they were updated)
+    JSONBIN_API_KEY = localStorage.getItem('tomtechJsonBinKey') || '';
+    JSONBIN_BIN_ID = localStorage.getItem('tomtechJsonBinId') || '';
+    
     // Also save to cloud storage for cross-device sync
     try {
         const synced = await saveToCloud(products);
         if (synced) {
             console.log('✅ Products synced to cloud successfully');
+            // Show notification if possible
+            if (typeof showNotification === 'function') {
+                showNotification('Products synced to cloud!', 'success');
+            }
         } else {
             console.log('⚠️ Cloud sync not configured. Products saved locally only.');
+            if (!JSONBIN_API_KEY) {
+                console.log('💡 Tip: Go to Settings to configure cloud sync for cross-device access');
+            }
         }
     } catch (error) {
         console.warn('Failed to sync to cloud:', error);
@@ -148,8 +159,49 @@ async function saveProducts(products) {
 
 // Save products to cloud storage
 async function saveToCloud(products) {
+    // Check if cloud sync is configured
+    if (!JSONBIN_API_KEY || JSONBIN_API_KEY.length === 0) {
+        console.log('⚠️ Cloud sync not configured - no Master Key found');
+        return false;
+    }
+    
+    // If no Bin ID, create a new bin first
+    if (!JSONBIN_BIN_ID || JSONBIN_BIN_ID.length === 0) {
+        console.log('📦 Creating new bin...');
+        try {
+            const createResponse = await fetch('https://api.jsonbin.io/v3/b', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_API_KEY,
+                    'X-Bin-Name': 'Tomtech Products'
+                },
+                body: JSON.stringify(products)
+            });
+            
+            if (createResponse.ok) {
+                const data = await createResponse.json();
+                JSONBIN_BIN_ID = data.metadata.id;
+                localStorage.setItem('tomtechJsonBinId', JSONBIN_BIN_ID);
+                console.log('✅ Bin created successfully:', JSONBIN_BIN_ID);
+                return true;
+            } else {
+                const errorData = await createResponse.json().catch(() => ({}));
+                console.error('❌ Failed to create bin:', errorData.message || createResponse.statusText);
+                return false;
+            }
+        } catch (error) {
+            console.error('❌ Error creating bin:', error);
+            return false;
+        }
+    }
+    
+    // Bin exists, update it
     const url = getJsonBinUrl();
-    if (!url || !JSONBIN_API_KEY) return false;
+    if (!url) {
+        console.error('❌ Invalid Bin ID');
+        return false;
+    }
     
     try {
         const response = await fetch(url, {
@@ -163,30 +215,26 @@ async function saveToCloud(products) {
         });
         
         if (response.ok) {
+            console.log('✅ Products updated in cloud successfully');
             return true;
-        } else if (response.status === 404) {
-            // Bin doesn't exist, create it
-            const createResponse = await fetch('https://api.jsonbin.io/v3/b', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': JSONBIN_API_KEY,
-                    'X-Bin-Name': 'Tomtech Products'
-                },
-                body: JSON.stringify(products)
-            });
-            if (createResponse.ok) {
-                const data = await createResponse.json();
-                JSONBIN_BIN_ID = data.metadata.id;
-                localStorage.setItem('tomtechJsonBinId', JSONBIN_BIN_ID);
-                return true;
+        } else {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('❌ Failed to update bin:', errorData.message || response.statusText, 'Status:', response.status);
+            
+            // If bin was deleted, try to create a new one
+            if (response.status === 404) {
+                console.log('📦 Bin not found, creating new one...');
+                JSONBIN_BIN_ID = '';
+                localStorage.removeItem('tomtechJsonBinId');
+                return await saveToCloud(products); // Recursively try to create
             }
+            
+            return false;
         }
     } catch (error) {
-        console.warn('JSONBin.io sync failed:', error);
+        console.error('❌ JSONBin.io sync failed:', error);
+        return false;
     }
-    
-    return false;
 }
 
 // Get all products (synchronous version for immediate access)
