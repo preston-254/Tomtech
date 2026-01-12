@@ -58,30 +58,46 @@ async function initializeProducts() {
 
 // Load products from localStorage and cloud
 async function loadProducts() {
+    // Reload cloud sync settings (in case they were updated)
+    JSONBIN_API_KEY = localStorage.getItem('tomtechJsonBinKey') || '';
+    JSONBIN_BIN_ID = localStorage.getItem('tomtechJsonBinId') || '';
+    
     // First, try to load from cloud (for cross-device sync)
     let cloudProducts = null;
-    try {
-        cloudProducts = await loadFromCloud();
-        if (cloudProducts && cloudProducts.length > 0) {
-            // Save cloud products to localStorage for offline access
-            localStorage.setItem('tomtechProducts', JSON.stringify(cloudProducts));
-            return cloudProducts;
+    if (JSONBIN_API_KEY && JSONBIN_BIN_ID) {
+        try {
+            cloudProducts = await loadFromCloud();
+            if (cloudProducts && cloudProducts.length > 0) {
+                // Save cloud products to localStorage for offline access
+                localStorage.setItem('tomtechProducts', JSON.stringify(cloudProducts));
+                localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
+                console.log('✅ Loaded products from cloud:', cloudProducts.length, 'products');
+                return cloudProducts;
+            } else {
+                console.log('⚠️ No products found in cloud or cloud sync not working');
+            }
+        } catch (error) {
+            console.warn('Failed to load from cloud:', error);
         }
-    } catch (error) {
-        console.warn('Failed to load from cloud:', error);
+    } else {
+        console.log('⚠️ Cloud sync not configured - missing Master Key or Bin ID');
     }
     
     // Fallback to localStorage
     const stored = localStorage.getItem('tomtechProducts');
     if (stored) {
         try {
-            return JSON.parse(stored);
+            const products = JSON.parse(stored);
+            console.log('📦 Loaded products from localStorage:', products.length, 'products');
+            return products;
         } catch (e) {
             console.error('Error loading products:', e);
         }
     }
     
-    // If no stored products, initialize with default products
+    // If no stored products AND no cloud products, initialize with default products
+    // BUT only if this is the first time (no products exist anywhere)
+    console.log('🆕 No products found. Initializing with default products.');
     return initializeDefaultProducts();
 }
 
@@ -112,7 +128,9 @@ async function loadFromCloud() {
 }
 
 // Initialize default products (migrate from script.js)
+// Only call this if NO products exist anywhere (first time setup)
 function initializeDefaultProducts() {
+    console.log('🆕 Initializing default products (first time setup)');
     const defaultProducts = [
         { id: 1, name: 'OBD II(16PIN)', price: 2700, image: 'images/products/IMG-20251230-WA0027.jpg', description: 'Universal 16-pin OBD II diagnostic cable compatible with all modern vehicles. Read and clear engine codes, monitor real-time data, and perform comprehensive vehicle diagnostics. Perfect for DIY mechanics and professional technicians. Easy plug-and-play installation!', category: 'Diagnostic Tools', tags: ['OBD', 'diagnostic', 'cable'], availability: 'in_stock', featured: false },
         { id: 2, name: 'AUTEL OBDII CABLE', price: 4500, image: 'images/products/IMG-20251230-WA0028.jpg', description: 'Premium AUTEL OBDII diagnostic cable with advanced features. Compatible with AUTEL diagnostic scanners for professional-grade vehicle analysis. Access deep system diagnostics, ECU programming, and advanced functions. High-quality construction ensures reliable performance!', category: 'Diagnostic Tools', tags: ['AUTEL', 'OBD', 'cable'], availability: 'in_stock', featured: false },
@@ -122,6 +140,7 @@ function initializeDefaultProducts() {
         { id: 6, name: 'CENTRAL DOOR LOCKING SYSTEM', price: 3500, image: 'images/products/IMG-20251230-WA0032.jpg', description: 'Complete central door locking system with remote control. Lock and unlock all doors simultaneously with the push of a button. Includes key fob, actuators, and wiring. Easy installation for most vehicles. Enhance security and convenience for your car!', category: 'Safety & Security', tags: ['locking', 'security', 'remote'], availability: 'in_stock', featured: false }
     ];
     
+    // Save to localStorage and try to sync to cloud
     saveProducts(defaultProducts);
     return defaultProducts;
 }
@@ -463,13 +482,20 @@ async function handleProductSubmit(e) {
         products.push(productData);
     }
 
-    await saveProducts(products);
+    const synced = await saveProducts(products);
     renderProductsTable();
     updateStats();
     closeProductModal();
 
-    // Show success message
-    alert('Product saved successfully! It will sync to other devices.');
+    // Show success message with sync status
+    const hasCloudConfig = localStorage.getItem('tomtechJsonBinKey') && localStorage.getItem('tomtechJsonBinId');
+    if (synced) {
+        alert('✅ Product saved successfully! It has been synced to the cloud and will appear on other devices.');
+    } else if (hasCloudConfig) {
+        alert('✅ Product saved locally! (Cloud sync failed - check your Master Key in Settings)');
+    } else {
+        alert('✅ Product saved locally! (Cloud sync not configured - go to Settings to enable cross-device sync)');
+    }
 }
 
 // Handle image upload
