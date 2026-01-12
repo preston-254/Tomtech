@@ -7,49 +7,46 @@ let firebaseApp = null;
 let firebaseDatabase = null;
 let firebaseInitialized = false;
 
-// Initialize Firebase
+// Initialize Firebase - Uses config embedded in HTML (window.FIREBASE_CONFIG)
 function initializeFirebase() {
-    if (firebaseInitialized) return firebaseApp;
+    if (firebaseInitialized && firebaseApp) return firebaseApp;
     
-    const firebaseConfig = {
-        apiKey: "AIzaSyDummyKeyReplaceWithYourOwn",
-        authDomain: "tomtech-autocare.firebaseapp.com",
-        databaseURL: "https://tomtech-autocare-default-rtdb.firebaseio.com",
-        projectId: "tomtech-autocare",
-        storageBucket: "tomtech-autocare.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "1:123456789:web:abcdef"
-    };
+    // Get config from window.FIREBASE_CONFIG (embedded in HTML)
+    if (typeof window === 'undefined' || !window.FIREBASE_CONFIG) {
+        console.error('❌ Firebase config not found. Make sure window.FIREBASE_CONFIG is set in HTML.');
+        return null;
+    }
     
-    // Get config from localStorage (set by admin in settings)
-    const savedConfig = localStorage.getItem('tomtechFirebaseConfig');
-    if (savedConfig) {
-        try {
-            const config = JSON.parse(savedConfig);
-            Object.assign(firebaseConfig, config);
-        } catch (e) {
-            console.error('Error parsing Firebase config:', e);
-        }
+    const firebaseConfig = window.FIREBASE_CONFIG;
+    
+    // Validate required fields
+    if (!firebaseConfig.apiKey || !firebaseConfig.databaseURL) {
+        console.error('❌ Invalid Firebase config - missing required fields');
+        return null;
     }
     
     try {
-        if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
+        if (typeof firebase === 'undefined') {
+            console.error('❌ Firebase SDK not loaded');
+            return null;
+        }
+        
+        if (firebase.apps.length === 0) {
             firebaseApp = firebase.initializeApp(firebaseConfig);
             firebaseDatabase = firebase.database();
             firebaseInitialized = true;
-            console.log('✅ Firebase initialized');
+            console.log('✅ Firebase initialized successfully');
             return firebaseApp;
-        } else if (typeof firebase !== 'undefined') {
+        } else {
             firebaseApp = firebase.app();
             firebaseDatabase = firebase.database();
             firebaseInitialized = true;
             return firebaseApp;
         }
     } catch (error) {
-        console.error('Firebase initialization error:', error);
+        console.error('❌ Firebase initialization error:', error);
+        return null;
     }
-    
-    return null;
 }
 
 // Initialize dashboard
@@ -636,28 +633,13 @@ function initializeSettings() {
 
     // Load WhatsApp number
     const whatsappNumber = localStorage.getItem('tomtechWhatsAppNumber') || '254702466009';
-    const jsonBinApiKey = localStorage.getItem('tomtechJsonBinKey') || '';
-    const jsonBinBinId = localStorage.getItem('tomtechJsonBinId') || '';
     
     if (document.getElementById('whatsappNumber')) {
         document.getElementById('whatsappNumber').value = whatsappNumber;
     }
-    if (document.getElementById('jsonBinApiKey')) {
-        document.getElementById('jsonBinApiKey').value = jsonBinApiKey;
-    }
-    if (document.getElementById('jsonBinBinId')) {
-        document.getElementById('jsonBinBinId').value = jsonBinBinId;
-    }
 
     if (settingsBtn) {
         settingsBtn.addEventListener('click', function() {
-            // Reload values when opening modal
-            if (document.getElementById('jsonBinApiKey')) {
-                document.getElementById('jsonBinApiKey').value = localStorage.getItem('tomtechJsonBinKey') || '';
-            }
-            if (document.getElementById('jsonBinBinId')) {
-                document.getElementById('jsonBinBinId').value = localStorage.getItem('tomtechJsonBinId') || '';
-            }
             settingsModal.classList.add('active');
         });
     }
@@ -674,104 +656,18 @@ function initializeSettings() {
         });
     }
 
-    const testFirebaseBtn = document.getElementById('testFirebaseBtn');
-    if (testFirebaseBtn) {
-        testFirebaseBtn.addEventListener('click', async function() {
-            const configText = document.getElementById('firebaseConfig').value;
-            if (!configText) {
-                alert('Please enter your Firebase configuration first');
-                return;
-            }
-            
-            testFirebaseBtn.textContent = 'Testing...';
-            testFirebaseBtn.disabled = true;
-            
-            try {
-                const config = JSON.parse(configText);
-                
-                // Temporarily save config to test
-                const oldConfig = localStorage.getItem('tomtechFirebaseConfig');
-                localStorage.setItem('tomtechFirebaseConfig', JSON.stringify(config));
-                
-                // Reset Firebase
-                firebaseInitialized = false;
-                firebaseApp = null;
-                firebaseDatabase = null;
-                
-                // Try to initialize
-                const initialized = initializeFirebase();
-                if (!initialized) {
-                    throw new Error('Failed to initialize Firebase');
-                }
-                
-                // Try to save a test product
-                const products = getProducts();
-                const synced = await saveToFirebase(products);
-                
-                if (synced) {
-                    alert('✅ Firebase connection successful! Your products will now sync across all devices.');
-                } else {
-                    throw new Error('Failed to save to Firebase');
-                }
-            } catch (error) {
-                alert('❌ Firebase test failed: ' + error.message + '\n\nPlease check:\n1. Firebase config is correct\n2. Realtime Database is enabled\n3. Database rules allow read/write');
-                if (oldConfig) {
-                    localStorage.setItem('tomtechFirebaseConfig', oldConfig);
-                }
-            } finally {
-                testFirebaseBtn.textContent = 'Test Firebase Connection';
-                testFirebaseBtn.disabled = false;
-            }
-        });
-    }
 
     if (saveSettingsBtn) {
-        saveSettingsBtn.addEventListener('click', async function() {
+        saveSettingsBtn.addEventListener('click', function() {
             const whatsappNumber = document.getElementById('whatsappNumber').value;
-            const firebaseConfigText = document.getElementById('firebaseConfig').value;
             
             if (whatsappNumber) {
                 localStorage.setItem('tomtechWhatsAppNumber', whatsappNumber);
+                alert('Settings saved successfully!');
+                settingsModal.classList.remove('active');
             } else {
                 alert('Please enter a valid WhatsApp number');
-                return;
             }
-            
-            // Save Firebase config
-            if (firebaseConfigText) {
-                try {
-                    const config = JSON.parse(firebaseConfigText);
-                    localStorage.setItem('tomtechFirebaseConfig', JSON.stringify(config));
-                    
-                    // Also store in a meta tag for cross-device access
-                    let metaTag = document.querySelector('meta[name="firebase-config"]');
-                    if (!metaTag) {
-                        metaTag = document.createElement('meta');
-                        metaTag.name = 'firebase-config';
-                        document.head.appendChild(metaTag);
-                    }
-                    metaTag.content = JSON.stringify(config);
-                    
-                    // Reset Firebase to use new config
-                    firebaseInitialized = false;
-                    firebaseApp = null;
-                    firebaseDatabase = null;
-                    
-                    // Try to sync existing products
-                    try {
-                        const products = getProducts();
-                        await saveToFirebase(products);
-                    } catch (error) {
-                        console.warn('Failed to sync on save:', error);
-                    }
-                } catch (e) {
-                    alert('Invalid Firebase config JSON. Please check your configuration.');
-                    return;
-                }
-            }
-            
-            alert('Settings saved successfully!');
-            settingsModal.classList.remove('active');
         });
     }
 

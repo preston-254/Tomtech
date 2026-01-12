@@ -200,30 +200,6 @@
                     <p class="form-hint">Format: Country code + number (e.g., 254702466009)</p>
                 </div>
                 
-                <div class="form-group" style="border-top: 1px solid var(--admin-border); padding-top: 24px; margin-top: 24px;">
-                    <h3 style="margin-bottom: 16px; color: var(--admin-text-primary);">Cloud Sync (Firebase)</h3>
-                    <p class="form-hint" style="margin-bottom: 16px;">Enable cloud sync using Firebase Realtime Database. Get a free account from <a href="https://firebase.google.com/" target="_blank" rel="noopener" style="color: var(--admin-primary);">Firebase</a></p>
-                    
-                    <div class="form-group" style="margin-bottom: 16px; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--admin-primary);">
-                        <h4 style="margin: 0 0 8px 0; font-size: 0.95rem; color: var(--admin-text-primary);">📋 Setup Instructions:</h4>
-                        <ol style="margin: 0; padding-left: 20px; font-size: 0.85rem; color: var(--admin-text-secondary);">
-                            <li>Go to <a href="https://console.firebase.google.com/" target="_blank" rel="noopener" style="color: var(--admin-primary);">Firebase Console</a></li>
-                            <li>Create a new project (or use existing)</li>
-                            <li>Enable <strong>Realtime Database</strong></li>
-                            <li>Copy your Firebase config and paste below</li>
-                        </ol>
-                    </div>
-                    
-                    <div class="form-group" style="margin-bottom: 16px;">
-                        <label class="form-label">Firebase Config (JSON) *</label>
-                        <textarea id="firebaseConfig" class="form-input" rows="10" placeholder='{"apiKey":"...","authDomain":"...","databaseURL":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}' style="font-family: monospace; font-size: 0.9rem;"></textarea>
-                        <p class="form-hint">Paste your Firebase configuration JSON here. Get it from Firebase Console → Project Settings → General → Your apps → Web app config</p>
-                    </div>
-                    
-                    <button type="button" class="admin-btn-secondary" id="testFirebaseBtn" style="margin-top: 12px; width: 100%;">
-                        Test Firebase Connection
-                    </button>
-                </div>
                 
                 <div class="modal-actions">
                     <button type="button" class="admin-btn-secondary" id="cancelSettingsBtn">Cancel</button>
