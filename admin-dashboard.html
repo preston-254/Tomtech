@@ -200,44 +200,27 @@
                 </div>
                 
                 <div class="form-group" style="border-top: 1px solid var(--admin-border); padding-top: 24px; margin-top: 24px;">
-                    <h3 style="margin-bottom: 16px; color: var(--admin-text-primary);">Cloud Sync (Cross-Device)</h3>
-                    <p class="form-hint" style="margin-bottom: 16px;">Enable cloud sync to make products appear on all devices. Get a free account from <a href="https://jsonbin.io/" target="_blank" rel="noopener" style="color: var(--admin-primary);">jsonbin.io</a></p>
+                    <h3 style="margin-bottom: 16px; color: var(--admin-text-primary);">Cloud Sync (Firebase)</h3>
+                    <p class="form-hint" style="margin-bottom: 16px;">Enable cloud sync using Firebase Realtime Database. Get a free account from <a href="https://firebase.google.com/" target="_blank" rel="noopener" style="color: var(--admin-primary);">Firebase</a></p>
+                    
+                    <div class="form-group" style="margin-bottom: 16px; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--admin-primary);">
+                        <h4 style="margin: 0 0 8px 0; font-size: 0.95rem; color: var(--admin-text-primary);">📋 Setup Instructions:</h4>
+                        <ol style="margin: 0; padding-left: 20px; font-size: 0.85rem; color: var(--admin-text-secondary);">
+                            <li>Go to <a href="https://console.firebase.google.com/" target="_blank" rel="noopener" style="color: var(--admin-primary);">Firebase Console</a></li>
+                            <li>Create a new project (or use existing)</li>
+                            <li>Enable <strong>Realtime Database</strong></li>
+                            <li>Copy your Firebase config and paste below</li>
+                        </ol>
+                    </div>
                     
                     <div class="form-group" style="margin-bottom: 16px;">
-                        <label class="form-label">JSONBin.io Master Key *</label>
-                        <input type="password" id="jsonBinApiKey" class="form-input" placeholder="Enter your Master Key (X-Master-Key)">
-                        <p class="form-hint">
-                            <strong>Important:</strong> You need your <strong>Master Key</strong> (not Access Key). 
-                            Find it in your JSONBin.io dashboard under "API Keys" → "Master Key". 
-                            This key has full access to create, read, and update bins.
-                        </p>
+                        <label class="form-label">Firebase Config (JSON) *</label>
+                        <textarea id="firebaseConfig" class="form-input" rows="10" placeholder='{"apiKey":"...","authDomain":"...","databaseURL":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}' style="font-family: monospace; font-size: 0.9rem;"></textarea>
+                        <p class="form-hint">Paste your Firebase configuration JSON here. Get it from Firebase Console → Project Settings → General → Your apps → Web app config</p>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">Bin ID (Auto-generated)</label>
-                        <input type="text" id="jsonBinBinId" class="form-input" placeholder="Will be created automatically" readonly>
-                        <p class="form-hint">This will be automatically created when you save your first product</p>
-                    </div>
-                    
-                    <div class="form-group" style="margin-top: 16px; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--admin-primary);">
-                        <h4 style="margin: 0 0 8px 0; font-size: 0.95rem; color: var(--admin-text-primary);">📋 Important for Cross-Device Sync:</h4>
-                        <p class="form-hint" style="margin: 0; font-size: 0.85rem;">
-                            <strong>To make products visible on other devices:</strong><br>
-                            1. After creating a bin, copy the Bin ID above<br>
-                            2. Go to <a href="https://jsonbin.io/app/bins" target="_blank" rel="noopener" style="color: var(--admin-primary);">jsonbin.io/app/bins</a><br>
-                            3. Find your bin and create a <strong>Read-Only Access Key</strong><br>
-                            4. Enter that Access Key below for public reading
-                        </p>
-                    </div>
-                    
-                    <div class="form-group" style="margin-top: 16px;">
-                        <label class="form-label">Read-Only Access Key (Optional - for public reading)</label>
-                        <input type="password" id="jsonBinReadOnlyKey" class="form-input" placeholder="Enter read-only access key for other devices">
-                        <p class="form-hint">This allows other devices to read products without the Master Key</p>
-                    </div>
-                    
-                    <button type="button" class="admin-btn-secondary" id="testSyncBtn" style="margin-top: 12px; width: 100%;">
-                        Test Cloud Sync
+                    <button type="button" class="admin-btn-secondary" id="testFirebaseBtn" style="margin-top: 12px; width: 100%;">
+                        Test Firebase Connection
                     </button>
                 </div>
                 
