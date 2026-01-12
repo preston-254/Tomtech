@@ -2,6 +2,19 @@
 let currentEditingProduct = null;
 let productImages = [];
 
+// Cloud storage configuration - Using JSONBin.io (Free tier available)
+let JSONBIN_BIN_ID = '';
+let JSONBIN_API_KEY = '';
+
+// Get JSONBin URL helper function
+function getJsonBinUrl() {
+    if (!JSONBIN_BIN_ID) return null;
+    return `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+}
+
+// Make function globally available
+window.getJsonBinUrl = getJsonBinUrl;
+
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
     // Check authentication
@@ -74,25 +87,25 @@ async function loadProducts() {
 
 // Load products from cloud storage
 async function loadFromCloud() {
-    // Try JSONBin.io first
-    if (JSONBIN_API_KEY && JSONBIN_API_KEY !== 'YOUR_JSONBIN_API_KEY') {
-        try {
-            const response = await fetch(JSONBIN_API_URL + '/latest', {
-                method: 'GET',
-                headers: {
-                    'X-Master-Key': JSONBIN_API_KEY
-                }
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                if (data.record && Array.isArray(data.record)) {
-                    return data.record;
-                }
+    const url = getJsonBinUrl();
+    if (!url || !JSONBIN_API_KEY) return null;
+    
+    try {
+        const response = await fetch(url + '/latest', {
+            method: 'GET',
+            headers: {
+                'X-Master-Key': JSONBIN_API_KEY
             }
-        } catch (error) {
-            console.warn('JSONBin.io load failed:', error);
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.record && Array.isArray(data.record)) {
+                return data.record;
+            }
         }
+    } catch (error) {
+        console.warn('JSONBin.io load failed:', error);
     }
     
     return null;
@@ -528,18 +541,54 @@ function initializeSettings() {
                 const oldBinId = JSONBIN_BIN_ID;
                 JSONBIN_API_KEY = apiKey;
                 
-                const products = getProducts();
-                const synced = await saveToCloud(products);
-                
-                if (synced) {
-                    alert('✅ Cloud sync test successful! Your products will now sync across all devices.');
-                    document.getElementById('jsonBinBinId').value = JSONBIN_BIN_ID || '';
+                // If no bin ID, create a new bin first
+                if (!JSONBIN_BIN_ID) {
+                    const products = getProducts();
+                    try {
+                        const createResponse = await fetch('https://api.jsonbin.io/v3/b', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Master-Key': JSONBIN_API_KEY,
+                                'X-Bin-Name': 'Tomtech Products'
+                            },
+                            body: JSON.stringify(products)
+                        });
+                        
+                        if (createResponse.ok) {
+                            const data = await createResponse.json();
+                            JSONBIN_BIN_ID = data.metadata.id;
+                            localStorage.setItem('tomtechJsonBinId', JSONBIN_BIN_ID);
+                            document.getElementById('jsonBinBinId').value = JSONBIN_BIN_ID;
+                            alert('✅ Cloud sync test successful! Bin created and products synced. Your products will now sync across all devices.');
+                        } else {
+                            const errorData = await createResponse.json();
+                            throw new Error(errorData.message || 'Failed to create bin');
+                        }
+                    } catch (error) {
+                        alert('❌ Error creating bin: ' + error.message + '. Please check your Master Key.');
+                        JSONBIN_API_KEY = oldKey;
+                        JSONBIN_BIN_ID = oldBinId;
+                        return;
+                    }
                 } else {
-                    alert('❌ Cloud sync test failed. Please check your Master Key. Make sure you\'re using the Master Key (X-Master-Key), not an Access Key.');
+                    // Bin exists, try to update it
+                    const products = getProducts();
+                    const synced = await saveToCloud(products);
+                    
+                    if (synced) {
+                        alert('✅ Cloud sync test successful! Your products will now sync across all devices.');
+                        document.getElementById('jsonBinBinId').value = JSONBIN_BIN_ID || '';
+                    } else {
+                        alert('❌ Cloud sync test failed. Please check your Master Key. Make sure you\'re using the Master Key (X-Master-Key), not an Access Key.');
+                    }
                 }
                 
-                JSONBIN_API_KEY = oldKey;
-                JSONBIN_BIN_ID = oldBinId;
+                // Restore old values if test failed
+                if (!JSONBIN_BIN_ID) {
+                    JSONBIN_API_KEY = oldKey;
+                    JSONBIN_BIN_ID = oldBinId;
+                }
             } catch (error) {
                 alert('❌ Error testing sync: ' + error.message);
             } finally {
