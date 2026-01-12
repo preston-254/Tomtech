@@ -203,34 +203,43 @@ function initializeDefaultProducts() {
     return defaultProducts;
 }
 
-// Save products to both localStorage and cloud
+// Save products to both localStorage and cloud (Firebase)
 async function saveProducts(products) {
     // Save to localStorage immediately (for offline access)
     localStorage.setItem('tomtechProducts', JSON.stringify(products));
     localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
     
-    // Reload cloud sync settings from localStorage (in case they were updated)
-    JSONBIN_API_KEY = localStorage.getItem('tomtechJsonBinKey') || '';
-    JSONBIN_BIN_ID = localStorage.getItem('tomtechJsonBinId') || '';
-    
-    // Also save to cloud storage for cross-device sync
+    // Also save to Firebase for cross-device sync
     try {
-        const synced = await saveToCloud(products);
+        const synced = await saveToFirebase(products);
         if (synced) {
-            console.log('✅ Products synced to cloud successfully');
-            // Show notification if possible
-            if (typeof showNotification === 'function') {
-                showNotification('Products synced to cloud!', 'success');
-            }
+            console.log('✅ Products synced to Firebase successfully');
+            return true;
         } else {
-            console.log('⚠️ Cloud sync not configured. Products saved locally only.');
-            if (!JSONBIN_API_KEY) {
-                console.log('💡 Tip: Go to Settings to configure cloud sync for cross-device access');
-            }
+            console.log('⚠️ Firebase not configured. Products saved locally only.');
+            return false;
         }
     } catch (error) {
-        console.warn('Failed to sync to cloud:', error);
-        // Continue even if cloud save fails - localStorage is still saved
+        console.error('❌ Failed to sync to Firebase:', error);
+        return false;
+    }
+}
+
+// Save products to Firebase
+async function saveToFirebase(products) {
+    try {
+        initializeFirebase();
+        if (!firebaseDatabase) {
+            console.log('⚠️ Firebase not initialized');
+            return false;
+        }
+        
+        await firebaseDatabase.ref('products').set(products);
+        console.log('✅ Products saved to Firebase:', products.length, 'products');
+        return true;
+    } catch (error) {
+        console.error('❌ Firebase save error:', error);
+        return false;
     }
 }
 
