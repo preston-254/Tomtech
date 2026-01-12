@@ -6,6 +6,38 @@ function getWhatsAppNumber() {
     return localStorage.getItem('tomtechWhatsAppNumber') || '254702466009';
 }
 
+// Load products from localStorage and cloud (managed in admin dashboard)
+async function loadProductsFromCloud() {
+    const jsonBinApiKey = localStorage.getItem('tomtechJsonBinKey') || '';
+    const jsonBinBinId = localStorage.getItem('tomtechJsonBinId') || '';
+    
+    if (jsonBinApiKey && jsonBinBinId) {
+        try {
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinBinId}/latest`, {
+                method: 'GET',
+                headers: {
+                    'X-Master-Key': jsonBinApiKey
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.record && Array.isArray(data.record)) {
+                    // Save to localStorage for offline access
+                    localStorage.setItem('tomtechProducts', JSON.stringify(data.record));
+                    localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
+                    console.log('✅ Loaded products from cloud');
+                    return data.record;
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to load from cloud:', error);
+        }
+    }
+    
+    return null;
+}
+
 // Load products from localStorage (managed in admin dashboard)
 function loadProducts() {
     const stored = localStorage.getItem('tomtechProducts');
@@ -119,8 +151,9 @@ function getDefaultProducts() {
     ];
 }
 
-// Products Data - Loaded from localStorage or default
-let products = loadProducts();
+// Products Data - Loaded from localStorage, cloud, or default
+// Will be initialized in initProducts() which is async
+let products = [];
 
 // Order via WhatsApp for single product
 function orderViaWhatsApp(productId) {
@@ -144,17 +177,57 @@ function orderViaWhatsApp(productId) {
 }
 
 // Initialize Products
-function initProducts() {
+async function initProducts() {
     const productsGrid = document.getElementById('productsGrid');
     if (!productsGrid) return;
 
-    // Reload products in case they were updated in admin
-    products = loadProducts();
+    // Try to load from cloud first (for cross-device sync)
+    const cloudProducts = await loadProductsFromCloud();
+    if (cloudProducts && cloudProducts.length > 0) {
+        products = cloudProducts;
+    } else {
+        // Reload products in case they were updated in admin
+        products = loadProducts();
+    }
+    
+    // Merge with default products to ensure fullDescription and importance exist
+    const defaultProducts = getDefaultProducts();
+    products = products.map(storedProduct => {
+        const defaultProduct = defaultProducts.find(dp => dp.id === storedProduct.id || dp.name === storedProduct.name);
+        if (defaultProduct) {
+            return {
+                ...defaultProduct,
+                ...storedProduct,
+                fullDescription: storedProduct.fullDescription || defaultProduct.fullDescription,
+                importance: storedProduct.importance || defaultProduct.importance
+            };
+        }
+        return storedProduct;
+    });
     
     // Refresh products when page becomes visible (in case admin updated them)
-    document.addEventListener('visibilitychange', function() {
+    document.addEventListener('visibilitychange', async function() {
         if (!document.hidden) {
-            products = loadProducts();
+            const cloudProducts = await loadProductsFromCloud();
+            if (cloudProducts && cloudProducts.length > 0) {
+                products = cloudProducts;
+            } else {
+                products = loadProducts();
+            }
+            // Merge with defaults
+            const defaultProducts = getDefaultProducts();
+            products = products.map(storedProduct => {
+                const defaultProduct = defaultProducts.find(dp => dp.id === storedProduct.id || dp.name === storedProduct.name);
+                if (defaultProduct) {
+                    return {
+                        ...defaultProduct,
+                        ...storedProduct,
+                        fullDescription: storedProduct.fullDescription || defaultProduct.fullDescription,
+                        importance: storedProduct.importance || defaultProduct.importance
+                    };
+                }
+                return storedProduct;
+            });
             renderProducts();
         }
     });

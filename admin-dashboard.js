@@ -27,8 +27,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Initialize products
-function initializeProducts() {
-    loadProducts();
+async function initializeProducts() {
+    // Load cloud sync settings
+    JSONBIN_API_KEY = localStorage.getItem('tomtechJsonBinKey') || '';
+    JSONBIN_BIN_ID = localStorage.getItem('tomtechJsonBinId') || '';
+    
+    await loadProducts();
     renderProductsTable();
 
     const addProductBtn = document.getElementById('addProductBtn');
@@ -39,8 +43,22 @@ function initializeProducts() {
     }
 }
 
-// Load products from localStorage
-function loadProducts() {
+// Load products from localStorage and cloud
+async function loadProducts() {
+    // First, try to load from cloud (for cross-device sync)
+    let cloudProducts = null;
+    try {
+        cloudProducts = await loadFromCloud();
+        if (cloudProducts && cloudProducts.length > 0) {
+            // Save cloud products to localStorage for offline access
+            localStorage.setItem('tomtechProducts', JSON.stringify(cloudProducts));
+            return cloudProducts;
+        }
+    } catch (error) {
+        console.warn('Failed to load from cloud:', error);
+    }
+    
+    // Fallback to localStorage
     const stored = localStorage.getItem('tomtechProducts');
     if (stored) {
         try {
@@ -49,8 +67,35 @@ function loadProducts() {
             console.error('Error loading products:', e);
         }
     }
+    
     // If no stored products, initialize with default products
     return initializeDefaultProducts();
+}
+
+// Load products from cloud storage
+async function loadFromCloud() {
+    // Try JSONBin.io first
+    if (JSONBIN_API_KEY && JSONBIN_API_KEY !== 'YOUR_JSONBIN_API_KEY') {
+        try {
+            const response = await fetch(JSONBIN_API_URL + '/latest', {
+                method: 'GET',
+                headers: {
+                    'X-Master-Key': JSONBIN_API_KEY
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.record && Array.isArray(data.record)) {
+                    return data.record;
+                }
+            }
+        } catch (error) {
+            console.warn('JSONBin.io load failed:', error);
+        }
+    }
+    
+    return null;
 }
 
 // Initialize default products (migrate from script.js)
@@ -68,14 +113,80 @@ function initializeDefaultProducts() {
     return defaultProducts;
 }
 
-// Save products to localStorage
-function saveProducts(products) {
+// Save products to both localStorage and cloud
+async function saveProducts(products) {
+    // Save to localStorage immediately (for offline access)
     localStorage.setItem('tomtechProducts', JSON.stringify(products));
+    localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
+    
+    // Also save to cloud storage for cross-device sync
+    try {
+        const synced = await saveToCloud(products);
+        if (synced) {
+            console.log('✅ Products synced to cloud successfully');
+        } else {
+            console.log('⚠️ Cloud sync not configured. Products saved locally only.');
+        }
+    } catch (error) {
+        console.warn('Failed to sync to cloud:', error);
+        // Continue even if cloud save fails - localStorage is still saved
+    }
 }
 
-// Get all products
+// Save products to cloud storage
+async function saveToCloud(products) {
+    const url = getJsonBinUrl();
+    if (!url || !JSONBIN_API_KEY) return false;
+    
+    try {
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': JSONBIN_API_KEY,
+                'X-Bin-Name': 'Tomtech Products'
+            },
+            body: JSON.stringify(products)
+        });
+        
+        if (response.ok) {
+            return true;
+        } else if (response.status === 404) {
+            // Bin doesn't exist, create it
+            const createResponse = await fetch('https://api.jsonbin.io/v3/b', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_API_KEY,
+                    'X-Bin-Name': 'Tomtech Products'
+                },
+                body: JSON.stringify(products)
+            });
+            if (createResponse.ok) {
+                const data = await createResponse.json();
+                JSONBIN_BIN_ID = data.metadata.id;
+                localStorage.setItem('tomtechJsonBinId', JSONBIN_BIN_ID);
+                return true;
+            }
+        }
+    } catch (error) {
+        console.warn('JSONBin.io sync failed:', error);
+    }
+    
+    return false;
+}
+
+// Get all products (synchronous version for immediate access)
 function getProducts() {
-    return loadProducts();
+    const stored = localStorage.getItem('tomtechProducts');
+    if (stored) {
+        try {
+            return JSON.parse(stored);
+        } catch (e) {
+            console.error('Error loading products:', e);
+        }
+    }
+    return [];
 }
 
 // Render products table
@@ -253,7 +364,7 @@ function fillProductForm(product) {
 }
 
 // Handle product form submit
-function handleProductSubmit(e) {
+async function handleProductSubmit(e) {
     e.preventDefault();
 
     const products = getProducts();
@@ -282,13 +393,13 @@ function handleProductSubmit(e) {
         products.push(productData);
     }
 
-    saveProducts(products);
+    await saveProducts(products);
     renderProductsTable();
     updateStats();
     closeProductModal();
 
     // Show success message
-    alert('Product saved successfully!');
+    alert('Product saved successfully! It will sync to other devices.');
 }
 
 // Handle image upload
@@ -358,13 +469,32 @@ function initializeSettings() {
     const closeSettingsModal = document.getElementById('closeSettingsModal');
     const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
     const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    const testSyncBtn = document.getElementById('testSyncBtn');
 
     // Load WhatsApp number
     const whatsappNumber = localStorage.getItem('tomtechWhatsAppNumber') || '254702466009';
-    document.getElementById('whatsappNumber').value = whatsappNumber;
+    const jsonBinApiKey = localStorage.getItem('tomtechJsonBinKey') || '';
+    const jsonBinBinId = localStorage.getItem('tomtechJsonBinId') || '';
+    
+    if (document.getElementById('whatsappNumber')) {
+        document.getElementById('whatsappNumber').value = whatsappNumber;
+    }
+    if (document.getElementById('jsonBinApiKey')) {
+        document.getElementById('jsonBinApiKey').value = jsonBinApiKey;
+    }
+    if (document.getElementById('jsonBinBinId')) {
+        document.getElementById('jsonBinBinId').value = jsonBinBinId;
+    }
 
     if (settingsBtn) {
         settingsBtn.addEventListener('click', function() {
+            // Reload values when opening modal
+            if (document.getElementById('jsonBinApiKey')) {
+                document.getElementById('jsonBinApiKey').value = localStorage.getItem('tomtechJsonBinKey') || '';
+            }
+            if (document.getElementById('jsonBinBinId')) {
+                document.getElementById('jsonBinBinId').value = localStorage.getItem('tomtechJsonBinId') || '';
+            }
             settingsModal.classList.add('active');
         });
     }
@@ -381,16 +511,79 @@ function initializeSettings() {
         });
     }
 
+    if (testSyncBtn) {
+        testSyncBtn.addEventListener('click', async function() {
+            const apiKey = document.getElementById('jsonBinApiKey').value;
+            if (!apiKey) {
+                alert('Please enter your JSONBin.io API key first');
+                return;
+            }
+            
+            testSyncBtn.textContent = 'Testing...';
+            testSyncBtn.disabled = true;
+            
+            try {
+                // Update global variables temporarily
+                const oldKey = JSONBIN_API_KEY;
+                const oldBinId = JSONBIN_BIN_ID;
+                JSONBIN_API_KEY = apiKey;
+                
+                const products = getProducts();
+                const synced = await saveToCloud(products);
+                
+                if (synced) {
+                    alert('✅ Cloud sync test successful! Your products will now sync across all devices.');
+                    document.getElementById('jsonBinBinId').value = JSONBIN_BIN_ID || '';
+                } else {
+                    alert('❌ Cloud sync test failed. Please check your API key.');
+                }
+                
+                JSONBIN_API_KEY = oldKey;
+                JSONBIN_BIN_ID = oldBinId;
+            } catch (error) {
+                alert('❌ Error testing sync: ' + error.message);
+            } finally {
+                testSyncBtn.textContent = 'Test Cloud Sync';
+                testSyncBtn.disabled = false;
+            }
+        });
+    }
+
     if (saveSettingsBtn) {
-        saveSettingsBtn.addEventListener('click', function() {
+        saveSettingsBtn.addEventListener('click', async function() {
             const whatsappNumber = document.getElementById('whatsappNumber').value;
+            const jsonBinApiKey = document.getElementById('jsonBinApiKey').value;
+            
             if (whatsappNumber) {
                 localStorage.setItem('tomtechWhatsAppNumber', whatsappNumber);
-                alert('Settings saved successfully!');
-                settingsModal.classList.remove('active');
             } else {
                 alert('Please enter a valid WhatsApp number');
+                return;
             }
+            
+            // Save cloud sync settings
+            if (jsonBinApiKey) {
+                localStorage.setItem('tomtechJsonBinKey', jsonBinApiKey);
+                JSONBIN_API_KEY = jsonBinApiKey;
+                
+                // If bin ID exists, save it
+                const binId = document.getElementById('jsonBinBinId').value;
+                if (binId) {
+                    localStorage.setItem('tomtechJsonBinId', binId);
+                    JSONBIN_BIN_ID = binId;
+                }
+                
+                // Try to sync existing products
+                try {
+                    const products = getProducts();
+                    await saveToCloud(products);
+                } catch (error) {
+                    console.warn('Failed to sync on save:', error);
+                }
+            }
+            
+            alert('Settings saved successfully!');
+            settingsModal.classList.remove('active');
         });
     }
 
