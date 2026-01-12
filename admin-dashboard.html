@@ -219,6 +219,23 @@
                         <p class="form-hint">This will be automatically created when you save your first product</p>
                     </div>
                     
+                    <div class="form-group" style="margin-top: 16px; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--admin-primary);">
+                        <h4 style="margin: 0 0 8px 0; font-size: 0.95rem; color: var(--admin-text-primary);">📋 Important for Cross-Device Sync:</h4>
+                        <p class="form-hint" style="margin: 0; font-size: 0.85rem;">
+                            <strong>To make products visible on other devices:</strong><br>
+                            1. After creating a bin, copy the Bin ID above<br>
+                            2. Go to <a href="https://jsonbin.io/app/bins" target="_blank" rel="noopener" style="color: var(--admin-primary);">jsonbin.io/app/bins</a><br>
+                            3. Find your bin and create a <strong>Read-Only Access Key</strong><br>
+                            4. Enter that Access Key below for public reading
+                        </p>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label class="form-label">Read-Only Access Key (Optional - for public reading)</label>
+                        <input type="password" id="jsonBinReadOnlyKey" class="form-input" placeholder="Enter read-only access key for other devices">
+                        <p class="form-hint">This allows other devices to read products without the Master Key</p>
+                    </div>
+                    
                     <button type="button" class="admin-btn-secondary" id="testSyncBtn" style="margin-top: 12px; width: 100%;">
                         Test Cloud Sync
                     </button>

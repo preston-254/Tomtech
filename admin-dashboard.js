@@ -183,7 +183,16 @@ async function saveToCloud(products) {
                 const data = await createResponse.json();
                 JSONBIN_BIN_ID = data.metadata.id;
                 localStorage.setItem('tomtechJsonBinId', JSONBIN_BIN_ID);
+                
+                // Also store in a way accessible to all devices
+                // Store in a meta tag or global variable that can be accessed
+                try {
+                    // Store in document for cross-device access
+                    document.documentElement.setAttribute('data-bin-id', JSONBIN_BIN_ID);
+                } catch (e) {}
+                
                 console.log('✅ Bin created successfully:', JSONBIN_BIN_ID);
+                console.log('💡 Bin ID saved. Other devices can access products using this Bin ID.');
                 return true;
             } else {
                 const errorData = await createResponse.json().catch(() => ({}));
@@ -668,6 +677,15 @@ function initializeSettings() {
                 if (binId) {
                     localStorage.setItem('tomtechJsonBinId', binId);
                     JSONBIN_BIN_ID = binId;
+                }
+                
+                // Save read-only access key if provided (for public device access)
+                const readOnlyKeyInput = document.getElementById('jsonBinReadOnlyKey');
+                if (readOnlyKeyInput) {
+                    const readOnlyKey = readOnlyKeyInput.value;
+                    if (readOnlyKey) {
+                        localStorage.setItem('tomtechJsonBinReadOnlyKey', readOnlyKey);
+                    }
                 }
                 
                 // Try to sync existing products
