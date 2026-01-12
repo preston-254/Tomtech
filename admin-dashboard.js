@@ -743,6 +743,15 @@ function initializeSettings() {
                     const config = JSON.parse(firebaseConfigText);
                     localStorage.setItem('tomtechFirebaseConfig', JSON.stringify(config));
                     
+                    // Also store in a meta tag for cross-device access
+                    let metaTag = document.querySelector('meta[name="firebase-config"]');
+                    if (!metaTag) {
+                        metaTag = document.createElement('meta');
+                        metaTag.name = 'firebase-config';
+                        document.head.appendChild(metaTag);
+                    }
+                    metaTag.content = JSON.stringify(config);
+                    
                     // Reset Firebase to use new config
                     firebaseInitialized = false;
                     firebaseApp = null;

@@ -13,16 +13,52 @@ let firebaseDatabase = null;
 function initializeFirebaseMain() {
     if (firebaseApp) return firebaseApp;
     
-    const savedConfig = localStorage.getItem('tomtechFirebaseConfig');
-    if (!savedConfig) {
+    // Try to get config from multiple sources (priority order)
+    let config = null;
+    
+    // 1. Try from window.FIREBASE_CONFIG (embedded in HTML)
+    if (typeof window !== 'undefined' && window.FIREBASE_CONFIG) {
+        config = window.FIREBASE_CONFIG;
+        console.log('✅ Using Firebase config from HTML');
+    }
+    // 2. Try from localStorage
+    else {
+        const savedConfig = localStorage.getItem('tomtechFirebaseConfig');
+        if (savedConfig) {
+            try {
+                config = JSON.parse(savedConfig);
+                console.log('✅ Using Firebase config from localStorage');
+            } catch (e) {
+                console.error('Error parsing Firebase config from localStorage:', e);
+            }
+        }
+    }
+    
+    // 3. Try from meta tag (fallback)
+    if (!config) {
+        const metaTag = document.querySelector('meta[name="firebase-config"]');
+        if (metaTag && metaTag.content) {
+            try {
+                config = JSON.parse(metaTag.content);
+                console.log('✅ Using Firebase config from meta tag');
+                // Also save to localStorage for future use
+                localStorage.setItem('tomtechFirebaseConfig', metaTag.content);
+            } catch (e) {
+                console.error('Error parsing Firebase config from meta tag:', e);
+            }
+        }
+    }
+    
+    if (!config) {
+        console.log('⚠️ Firebase config not found. Products will load from localStorage only.');
         return null;
     }
     
     try {
-        const config = JSON.parse(savedConfig);
         if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
             firebaseApp = firebase.initializeApp(config);
             firebaseDatabase = firebase.database();
+            console.log('✅ Firebase initialized on main website');
             return firebaseApp;
         } else if (typeof firebase !== 'undefined') {
             firebaseApp = firebase.app();
@@ -30,7 +66,7 @@ function initializeFirebaseMain() {
             return firebaseApp;
         }
     } catch (error) {
-        console.error('Firebase initialization error:', error);
+        console.error('❌ Firebase initialization error:', error);
     }
     
     return null;
