@@ -515,7 +515,7 @@ function initializeSettings() {
         testSyncBtn.addEventListener('click', async function() {
             const apiKey = document.getElementById('jsonBinApiKey').value;
             if (!apiKey) {
-                alert('Please enter your JSONBin.io API key first');
+                alert('Please enter your JSONBin.io Master Key first');
                 return;
             }
             
@@ -535,7 +535,7 @@ function initializeSettings() {
                     alert('✅ Cloud sync test successful! Your products will now sync across all devices.');
                     document.getElementById('jsonBinBinId').value = JSONBIN_BIN_ID || '';
                 } else {
-                    alert('❌ Cloud sync test failed. Please check your API key.');
+                    alert('❌ Cloud sync test failed. Please check your Master Key. Make sure you\'re using the Master Key (X-Master-Key), not an Access Key.');
                 }
                 
                 JSONBIN_API_KEY = oldKey;
