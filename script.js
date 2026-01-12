@@ -6,33 +6,63 @@ function getWhatsAppNumber() {
     return localStorage.getItem('tomtechWhatsAppNumber') || '254702466009';
 }
 
-// Load products from localStorage and cloud (managed in admin dashboard)
-async function loadProductsFromCloud() {
-    const jsonBinApiKey = localStorage.getItem('tomtechJsonBinKey') || '';
-    const jsonBinBinId = localStorage.getItem('tomtechJsonBinId') || '';
+// Firebase initialization for main website
+let firebaseApp = null;
+let firebaseDatabase = null;
+
+function initializeFirebaseMain() {
+    if (firebaseApp) return firebaseApp;
     
-    if (jsonBinApiKey && jsonBinBinId) {
-        try {
-            const response = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinBinId}/latest`, {
-                method: 'GET',
-                headers: {
-                    'X-Master-Key': jsonBinApiKey
-                }
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                if (data.record && Array.isArray(data.record)) {
-                    // Save to localStorage for offline access
-                    localStorage.setItem('tomtechProducts', JSON.stringify(data.record));
-                    localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
-                    console.log('✅ Loaded products from cloud');
-                    return data.record;
-                }
-            }
-        } catch (error) {
-            console.warn('Failed to load from cloud:', error);
+    const savedConfig = localStorage.getItem('tomtechFirebaseConfig');
+    if (!savedConfig) {
+        return null;
+    }
+    
+    try {
+        const config = JSON.parse(savedConfig);
+        if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
+            firebaseApp = firebase.initializeApp(config);
+            firebaseDatabase = firebase.database();
+            return firebaseApp;
+        } else if (typeof firebase !== 'undefined') {
+            firebaseApp = firebase.app();
+            firebaseDatabase = firebase.database();
+            return firebaseApp;
         }
+    } catch (error) {
+        console.error('Firebase initialization error:', error);
+    }
+    
+    return null;
+}
+
+// Load products from Firebase (for main website)
+async function loadProductsFromCloud() {
+    try {
+        initializeFirebaseMain();
+        if (!firebaseDatabase) {
+            return null;
+        }
+        
+        const snapshot = await firebaseDatabase.ref('products').once('value');
+        const products = snapshot.val();
+        
+        if (products && Array.isArray(products) && products.length > 0) {
+            localStorage.setItem('tomtechProducts', JSON.stringify(products));
+            localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
+            console.log('✅ Loaded products from Firebase:', products.length, 'products');
+            return products;
+        } else if (products && typeof products === 'object') {
+            const productsArray = Object.values(products);
+            if (productsArray.length > 0) {
+                localStorage.setItem('tomtechProducts', JSON.stringify(productsArray));
+                localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
+                console.log('✅ Loaded products from Firebase:', productsArray.length, 'products');
+                return productsArray;
+            }
+        }
+    } catch (error) {
+        console.warn('Failed to load from Firebase:', error);
     }
     
     return null;

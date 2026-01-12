@@ -2,18 +2,55 @@
 let currentEditingProduct = null;
 let productImages = [];
 
-// Cloud storage configuration - Using JSONBin.io (Free tier available)
-let JSONBIN_BIN_ID = '';
-let JSONBIN_API_KEY = '';
+// Firebase configuration
+let firebaseApp = null;
+let firebaseDatabase = null;
+let firebaseInitialized = false;
 
-// Get JSONBin URL helper function
-function getJsonBinUrl() {
-    if (!JSONBIN_BIN_ID) return null;
-    return `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+// Initialize Firebase
+function initializeFirebase() {
+    if (firebaseInitialized) return firebaseApp;
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyDummyKeyReplaceWithYourOwn",
+        authDomain: "tomtech-autocare.firebaseapp.com",
+        databaseURL: "https://tomtech-autocare-default-rtdb.firebaseio.com",
+        projectId: "tomtech-autocare",
+        storageBucket: "tomtech-autocare.appspot.com",
+        messagingSenderId: "123456789",
+        appId: "1:123456789:web:abcdef"
+    };
+    
+    // Get config from localStorage (set by admin in settings)
+    const savedConfig = localStorage.getItem('tomtechFirebaseConfig');
+    if (savedConfig) {
+        try {
+            const config = JSON.parse(savedConfig);
+            Object.assign(firebaseConfig, config);
+        } catch (e) {
+            console.error('Error parsing Firebase config:', e);
+        }
+    }
+    
+    try {
+        if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            firebaseDatabase = firebase.database();
+            firebaseInitialized = true;
+            console.log('✅ Firebase initialized');
+            return firebaseApp;
+        } else if (typeof firebase !== 'undefined') {
+            firebaseApp = firebase.app();
+            firebaseDatabase = firebase.database();
+            firebaseInitialized = true;
+            return firebaseApp;
+        }
+    } catch (error) {
+        console.error('Firebase initialization error:', error);
+    }
+    
+    return null;
 }
-
-// Make function globally available
-window.getJsonBinUrl = getJsonBinUrl;
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
@@ -41,9 +78,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize products
 async function initializeProducts() {
-    // Load cloud sync settings
-    JSONBIN_API_KEY = localStorage.getItem('tomtechJsonBinKey') || '';
-    JSONBIN_BIN_ID = localStorage.getItem('tomtechJsonBinId') || '';
+    // Initialize Firebase
+    initializeFirebase();
     
     await loadProducts();
     renderProductsTable();
@@ -56,31 +92,23 @@ async function initializeProducts() {
     }
 }
 
-// Load products from localStorage and cloud
+// Load products from localStorage and Firebase
 async function loadProducts() {
-    // Reload cloud sync settings (in case they were updated)
-    JSONBIN_API_KEY = localStorage.getItem('tomtechJsonBinKey') || '';
-    JSONBIN_BIN_ID = localStorage.getItem('tomtechJsonBinId') || '';
-    
-    // First, try to load from cloud (for cross-device sync)
-    let cloudProducts = null;
-    if (JSONBIN_API_KEY && JSONBIN_BIN_ID) {
-        try {
-            cloudProducts = await loadFromCloud();
-            if (cloudProducts && cloudProducts.length > 0) {
-                // Save cloud products to localStorage for offline access
-                localStorage.setItem('tomtechProducts', JSON.stringify(cloudProducts));
-                localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
-                console.log('✅ Loaded products from cloud:', cloudProducts.length, 'products');
-                return cloudProducts;
-            } else {
-                console.log('⚠️ No products found in cloud or cloud sync not working');
-            }
-        } catch (error) {
-            console.warn('Failed to load from cloud:', error);
+    // First, try to load from Firebase (for cross-device sync)
+    let firebaseProducts = null;
+    try {
+        firebaseProducts = await loadFromFirebase();
+        if (firebaseProducts && firebaseProducts.length > 0) {
+            // Save Firebase products to localStorage for offline access
+            localStorage.setItem('tomtechProducts', JSON.stringify(firebaseProducts));
+            localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
+            console.log('✅ Loaded products from Firebase:', firebaseProducts.length, 'products');
+            return firebaseProducts;
+        } else if (firebaseProducts !== null) {
+            console.log('⚠️ No products found in Firebase');
         }
-    } else {
-        console.log('⚠️ Cloud sync not configured - missing Master Key or Bin ID');
+    } catch (error) {
+        console.warn('Failed to load from Firebase:', error);
     }
     
     // Fallback to localStorage
@@ -95,10 +123,40 @@ async function loadProducts() {
         }
     }
     
-    // If no stored products AND no cloud products, initialize with default products
-    // BUT only if this is the first time (no products exist anywhere)
+    // If no stored products AND no Firebase products, initialize with default products
     console.log('🆕 No products found. Initializing with default products.');
     return initializeDefaultProducts();
+}
+
+// Load products from Firebase
+async function loadFromFirebase() {
+    try {
+        initializeFirebase();
+        if (!firebaseDatabase) {
+            console.log('⚠️ Firebase not initialized');
+            return null;
+        }
+        
+        const snapshot = await firebaseDatabase.ref('products').once('value');
+        const products = snapshot.val();
+        
+        if (products && Array.isArray(products) && products.length > 0) {
+            console.log('✅ Loaded', products.length, 'products from Firebase');
+            return products;
+        } else if (products && typeof products === 'object') {
+            // If it's an object, convert to array
+            const productsArray = Object.values(products);
+            if (productsArray.length > 0) {
+                console.log('✅ Loaded', productsArray.length, 'products from Firebase (converted from object)');
+                return productsArray;
+            }
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('❌ Firebase load error:', error);
+        return null;
+    }
 }
 
 // Load products from cloud storage
@@ -607,76 +665,53 @@ function initializeSettings() {
         });
     }
 
-    if (testSyncBtn) {
-        testSyncBtn.addEventListener('click', async function() {
-            const apiKey = document.getElementById('jsonBinApiKey').value;
-            if (!apiKey) {
-                alert('Please enter your JSONBin.io Master Key first');
+    const testFirebaseBtn = document.getElementById('testFirebaseBtn');
+    if (testFirebaseBtn) {
+        testFirebaseBtn.addEventListener('click', async function() {
+            const configText = document.getElementById('firebaseConfig').value;
+            if (!configText) {
+                alert('Please enter your Firebase configuration first');
                 return;
             }
             
-            testSyncBtn.textContent = 'Testing...';
-            testSyncBtn.disabled = true;
+            testFirebaseBtn.textContent = 'Testing...';
+            testFirebaseBtn.disabled = true;
             
             try {
-                // Update global variables temporarily
-                const oldKey = JSONBIN_API_KEY;
-                const oldBinId = JSONBIN_BIN_ID;
-                JSONBIN_API_KEY = apiKey;
+                const config = JSON.parse(configText);
                 
-                // If no bin ID, create a new bin first
-                if (!JSONBIN_BIN_ID) {
-                    const products = getProducts();
-                    try {
-                        const createResponse = await fetch('https://api.jsonbin.io/v3/b', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Master-Key': JSONBIN_API_KEY,
-                                'X-Bin-Name': 'Tomtech Products'
-                            },
-                            body: JSON.stringify(products)
-                        });
-                        
-                        if (createResponse.ok) {
-                            const data = await createResponse.json();
-                            JSONBIN_BIN_ID = data.metadata.id;
-                            localStorage.setItem('tomtechJsonBinId', JSONBIN_BIN_ID);
-                            document.getElementById('jsonBinBinId').value = JSONBIN_BIN_ID;
-                            alert('✅ Cloud sync test successful! Bin created and products synced. Your products will now sync across all devices.');
-                        } else {
-                            const errorData = await createResponse.json();
-                            throw new Error(errorData.message || 'Failed to create bin');
-                        }
-                    } catch (error) {
-                        alert('❌ Error creating bin: ' + error.message + '. Please check your Master Key.');
-                        JSONBIN_API_KEY = oldKey;
-                        JSONBIN_BIN_ID = oldBinId;
-                        return;
-                    }
-                } else {
-                    // Bin exists, try to update it
-                    const products = getProducts();
-                    const synced = await saveToCloud(products);
-                    
-                    if (synced) {
-                        alert('✅ Cloud sync test successful! Your products will now sync across all devices.');
-                        document.getElementById('jsonBinBinId').value = JSONBIN_BIN_ID || '';
-                    } else {
-                        alert('❌ Cloud sync test failed. Please check your Master Key. Make sure you\'re using the Master Key (X-Master-Key), not an Access Key.');
-                    }
+                // Temporarily save config to test
+                const oldConfig = localStorage.getItem('tomtechFirebaseConfig');
+                localStorage.setItem('tomtechFirebaseConfig', JSON.stringify(config));
+                
+                // Reset Firebase
+                firebaseInitialized = false;
+                firebaseApp = null;
+                firebaseDatabase = null;
+                
+                // Try to initialize
+                const initialized = initializeFirebase();
+                if (!initialized) {
+                    throw new Error('Failed to initialize Firebase');
                 }
                 
-                // Restore old values if test failed
-                if (!JSONBIN_BIN_ID) {
-                    JSONBIN_API_KEY = oldKey;
-                    JSONBIN_BIN_ID = oldBinId;
+                // Try to save a test product
+                const products = getProducts();
+                const synced = await saveToFirebase(products);
+                
+                if (synced) {
+                    alert('✅ Firebase connection successful! Your products will now sync across all devices.');
+                } else {
+                    throw new Error('Failed to save to Firebase');
                 }
             } catch (error) {
-                alert('❌ Error testing sync: ' + error.message);
+                alert('❌ Firebase test failed: ' + error.message + '\n\nPlease check:\n1. Firebase config is correct\n2. Realtime Database is enabled\n3. Database rules allow read/write');
+                if (oldConfig) {
+                    localStorage.setItem('tomtechFirebaseConfig', oldConfig);
+                }
             } finally {
-                testSyncBtn.textContent = 'Test Cloud Sync';
-                testSyncBtn.disabled = false;
+                testFirebaseBtn.textContent = 'Test Firebase Connection';
+                testFirebaseBtn.disabled = false;
             }
         });
     }
@@ -684,7 +719,7 @@ function initializeSettings() {
     if (saveSettingsBtn) {
         saveSettingsBtn.addEventListener('click', async function() {
             const whatsappNumber = document.getElementById('whatsappNumber').value;
-            const jsonBinApiKey = document.getElementById('jsonBinApiKey').value;
+            const firebaseConfigText = document.getElementById('firebaseConfig').value;
             
             if (whatsappNumber) {
                 localStorage.setItem('tomtechWhatsAppNumber', whatsappNumber);
@@ -693,33 +728,27 @@ function initializeSettings() {
                 return;
             }
             
-            // Save cloud sync settings
-            if (jsonBinApiKey) {
-                localStorage.setItem('tomtechJsonBinKey', jsonBinApiKey);
-                JSONBIN_API_KEY = jsonBinApiKey;
-                
-                // If bin ID exists, save it
-                const binId = document.getElementById('jsonBinBinId').value;
-                if (binId) {
-                    localStorage.setItem('tomtechJsonBinId', binId);
-                    JSONBIN_BIN_ID = binId;
-                }
-                
-                // Save read-only access key if provided (for public device access)
-                const readOnlyKeyInput = document.getElementById('jsonBinReadOnlyKey');
-                if (readOnlyKeyInput) {
-                    const readOnlyKey = readOnlyKeyInput.value;
-                    if (readOnlyKey) {
-                        localStorage.setItem('tomtechJsonBinReadOnlyKey', readOnlyKey);
-                    }
-                }
-                
-                // Try to sync existing products
+            // Save Firebase config
+            if (firebaseConfigText) {
                 try {
-                    const products = getProducts();
-                    await saveToCloud(products);
-                } catch (error) {
-                    console.warn('Failed to sync on save:', error);
+                    const config = JSON.parse(firebaseConfigText);
+                    localStorage.setItem('tomtechFirebaseConfig', JSON.stringify(config));
+                    
+                    // Reset Firebase to use new config
+                    firebaseInitialized = false;
+                    firebaseApp = null;
+                    firebaseDatabase = null;
+                    
+                    // Try to sync existing products
+                    try {
+                        const products = getProducts();
+                        await saveToFirebase(products);
+                    } catch (error) {
+                        console.warn('Failed to sync on save:', error);
+                    }
+                } catch (e) {
+                    alert('Invalid Firebase config JSON. Please check your configuration.');
+                    return;
                 }
             }
             
