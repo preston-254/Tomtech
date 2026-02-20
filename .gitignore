@@ -1,0 +1,7 @@
+# Ignore saved Bing/search result junk
+*_files/
+* - Search Images_files/
+saved_resource*
+*.download
+Thumbs.db
+.DS_Store

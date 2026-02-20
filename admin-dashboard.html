@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="firebase-config" content="">
+    <title>Admin Dashboard - TOM TECH AUTOCARE</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-dashboard.css">
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <div class="admin-header-left">
+                <h1 class="admin-logo">TOM TECH Admin</h1>
+            </div>
+            <div class="admin-header-right">
+                <button class="admin-btn-secondary" id="settingsBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+                    </svg>
+                    Settings
+                </button>
+                <button class="admin-btn-secondary" id="logoutBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <div class="admin-container">
+            <!-- Dashboard Stats -->
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                        <h3 class="stat-value" id="totalProducts">0</h3>
+                        <p class="stat-label">Total Products</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-info">
+                        <h3 class="stat-value" id="featuredProducts">0</h3>
+                        <p class="stat-label">Featured Products</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3 class="stat-value" id="inStockProducts">0</h3>
+                        <p class="stat-label">In Stock</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">❌</div>
+                    <div class="stat-info">
+                        <h3 class="stat-value" id="outOfStockProducts">0</h3>
+                        <p class="stat-label">Out of Stock</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Section -->
+            <div class="admin-section">
+                <div class="admin-section-header">
+                    <h2 class="admin-section-title">Products Management</h2>
+                    <button class="admin-btn-primary" id="addProductBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Product
+                    </button>
+                </div>
+
+                <!-- Products Table -->
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Featured</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <!-- Products will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add Product</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <form class="modal-form" id="productForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Product Name *</label>
+                        <input type="text" id="productName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Price (KES) *</label>
+                        <input type="number" id="productPrice" class="form-input" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="productDescription" class="form-input" rows="4"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <input type="text" id="productCategory" class="form-input" placeholder="e.g., Diagnostic Tools">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tags (comma separated)</label>
+                        <input type="text" id="productTags" class="form-input" placeholder="e.g., OBD, diagnostic, cable">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Product Images</label>
+                    <div class="image-upload-area" id="imageUploadArea">
+                        <input type="file" id="productImages" class="file-input" multiple accept="image/*">
+                        <button type="button" class="image-upload-button" id="imageUploadButton">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <span>Browse Images from Phone</span>
+                            <span class="image-upload-subtitle">Tap to open folder/images</span>
+                        </button>
+                        <div class="image-upload-placeholder">
+                            <p class="image-upload-hint">You can select multiple images at once</p>
+                        </div>
+                        <div class="image-preview-container" id="imagePreviewContainer"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Availability</label>
+                        <select id="productAvailability" class="form-input">
+                            <option value="in_stock">In Stock</option>
+                            <option value="out_of_stock">Out of Stock</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-checkbox-label">
+                            <input type="checkbox" id="productFeatured" class="form-checkbox">
+                            <span>Mark as Featured</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="admin-btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="admin-btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Settings</h2>
+                <button class="modal-close" id="closeSettingsModal">&times;</button>
+            </div>
+            <div class="modal-form">
+                <div class="form-group">
+                    <label class="form-label">WhatsApp Number *</label>
+                    <input type="text" id="whatsappNumber" class="form-input" placeholder="254702466009" required>
+                    <p class="form-hint">Format: Country code + number (e.g., 254702466009)</p>
+                </div>
+                
+                
+                <div class="modal-actions">
+                    <button type="button" class="admin-btn-secondary" id="cancelSettingsBtn">Cancel</button>
+                    <button type="button" class="admin-btn-primary" id="saveSettingsBtn">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <!-- Firebase Config - Replace with your actual config from Firebase Console -->
+    <script>
+        // Add your Firebase config here (get it from Firebase Console → Project Settings)
+        // Example (replace with your actual config):
+        window.FIREBASE_CONFIG = {
+            "apiKey": "AIzaSyDSqdYUwCLC5_pyajNWjynMd_19hs3ySXg",
+            "authDomain": "tomtech-51bcc.firebaseapp.com",
+            "databaseURL": "https://tomtech-51bcc-default-rtdb.firebaseio.com",
+            "projectId": "tomtech-51bcc",
+            "storageBucket": "tomtech-51bcc.firebasestorage.app",
+            "messagingSenderId": "327251258228",
+            "appId": "1:327251258228:web:4c5d075366a1d5a42fda21"
+        };
+    </script>
+    <script src="admin-dashboard.js"></script>
+</body>
+</html>
+

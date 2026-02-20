@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin-login.html
+Disallow: /admin-dashboard.html
+Disallow: /admin-auth.js
+Disallow: /admin-dashboard.js
+Disallow: /admin-dashboard.css
+

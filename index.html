@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="firebase-config" content="">
+    <title>TOM TECH AUTOCARE LIMITED - ECU Programming & Automotive Electronics</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Floating Automotive Tools Background -->
+    <div class="floating-tools-container">
+        <div class="floating-tool tool-1">🔧</div>
+        <div class="floating-tool tool-2">⚙️</div>
+        <div class="floating-tool tool-3">🔩</div>
+        <div class="floating-tool tool-4">⚡</div>
+        <div class="floating-tool tool-5">🔌</div>
+        <div class="floating-tool tool-6">🛠️</div>
+        <div class="floating-tool tool-7">🔋</div>
+        <div class="floating-tool tool-8">📡</div>
+        <div class="floating-tool tool-9">🚗</div>
+        <div class="floating-tool tool-10">🔐</div>
+        <div class="floating-tool tool-11">💡</div>
+        <div class="floating-tool tool-12">🔍</div>
+    </div>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="nav-brand">
+                <img src="images/WhatsApp Image 2025-12-30 at 11.29.12_e0fbb605.jpg" alt="TOM TECH AUTOCARE Logo" class="logo">
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#products" class="nav-link">Products</a></li>
+                <li><a href="#services" class="nav-link">Services</a></li>
+                <li><a href="#about" class="nav-link">About Us</a></li>
+                <li><a href="#contact" class="nav-link">Contact Us</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+                    <svg class="theme-icon sun-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <svg class="theme-icon moon-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button class="cart-icon" id="cartBtn">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 17.9 19 19 19C20.1 19 21 18.1 21 17V13M9 19.5C9.8 19.5 10.5 20.2 10.5 21C10.5 21.8 9.8 22.5 9 22.5C8.2 22.5 7.5 21.8 7.5 21C7.5 20.2 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21C21.5 21.8 20.8 22.5 20 22.5C19.2 22.5 18.5 21.8 18.5 21C18.5 20.2 19.2 19.5 20 19.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <a href="#contact" class="btn btn-cta">Schedule an Appointment</a>
+            </div>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content container">
+            <div class="hero-text">
+                <h1 class="hero-title">Professional <span class="highlight">ECU Programming & Automotive Electronics</span></h1>
+                <p class="hero-subtitle">Expert ECU repair, tuning, programming, and automotive diagnostics for all vehicle makes and models</p>
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn btn-primary">Contact Us</a>
+                    <a href="#services" class="btn btn-secondary">Our Services</a>
+                </div>
+            </div>
+            <div class="hero-image">
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Cards Section -->
+    <section class="features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Accurate Diagnosis Guaranteed</h3>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Expert Support</h3>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Excellent Customer Service</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="products">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our <span class="highlight">Products & Services</span></h2>
+                <p class="section-subtitle">Browse our range of automotive products and services</p>
+                <div class="trust-badges-header">
+                    <span class="trust-badge quality">
+                        ✓ Quality Guaranteed
+                    </span>
+                    <span class="trust-badge delivery">
+                        🚚 Fast Delivery
+                    </span>
+                    <span class="trust-badge warranty">
+                        🛡️ Expert Support
+                    </span>
+                    <span class="trust-badge secure">
+                        🔒 Secure Payment
+                    </span>
+                    <span class="trust-badge bestseller">
+                        ⭐ Best Seller
+                    </span>
+                </div>
+                <div class="search-container products-search">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search products...">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                        <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+            </div>
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be dynamically added here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Services</h2>
+                <p class="section-subtitle">Professional ECU and automotive electronics services</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card" data-service="car-key">
+                    <div class="service-header">
+                        <div class="service-icon">🔑</div>
+                        <h3 class="service-title">Car Key Programming</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Professional car key programming and replacement for all vehicle makes and models.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Programs new keys, remotes, and key fobs to work with your vehicle's immobilizer system. Restores lost or damaged keys without replacing the entire system.</p>
+                        <p><strong>Benefits:</strong> Cost-effective key replacement, enhanced security, and compatibility with all modern vehicle security systems.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-service="ecu-repair">
+                    <div class="service-header">
+                        <div class="service-icon">⚙️</div>
+                        <h3 class="service-title">Car ECU Repair</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Expert Engine Control Unit repair and restoration services.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Diagnoses and repairs faulty ECUs, restores corrupted software, and fixes hardware issues in your vehicle's brain.</p>
+                        <p><strong>Benefits:</strong> Restores engine performance, fixes error codes, improves fuel efficiency, and prevents costly ECU replacement.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-service="dpf-delete">
+                    <div class="service-header">
+                        <div class="service-icon">🔧</div>
+                        <h3 class="service-title">DPF Delete</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Diesel Particulate Filter removal and programming services.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Removes the DPF system from your diesel vehicle and reprograms the ECU to eliminate regeneration cycles and error codes.</p>
+                        <p><strong>Benefits:</strong> Improved fuel economy, increased engine power, reduced maintenance costs, and elimination of DPF-related breakdowns.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-service="egr-delete">
+                    <div class="service-header">
+                        <div class="service-icon">🛠️</div>
+                        <h3 class="service-title">EGR Delete</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Exhaust Gas Recirculation system removal and ECU programming.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Removes the EGR valve and system, then reprograms the ECU to prevent carbon buildup and improve engine performance.</p>
+                        <p><strong>Benefits:</strong> Cleaner engine, better throttle response, reduced carbon deposits, and improved overall engine longevity.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-service="adblue-delete">
+                    <div class="service-header">
+                        <div class="service-icon">💧</div>
+                        <h3 class="service-title">Adblue Delete</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Adblue/SCR system removal and ECU modification services.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Removes the Adblue/SCR system and reprograms the ECU to eliminate the need for Adblue fluid and related system maintenance.</p>
+                        <p><strong>Benefits:</strong> No more Adblue refills, reduced maintenance costs, improved reliability, and elimination of Adblue system failures.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-service="ecu-programming">
+                    <div class="service-header">
+                        <div class="service-icon">📱</div>
+                        <h3 class="service-title">ECU Programming</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Professional ECU programming and software updates.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Updates ECU software, installs new firmware, and programs ECUs for vehicle modifications or replacements.</p>
+                        <p><strong>Benefits:</strong> Latest software features, bug fixes, improved compatibility, and optimized vehicle performance.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-service="ecu-tuning">
+                    <div class="service-header">
+                        <div class="service-icon">⚡</div>
+                        <h3 class="service-title">ECU Tuning</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Performance tuning and optimization for enhanced vehicle performance.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Modifies ECU parameters to optimize engine performance, power output, and fuel efficiency based on your driving needs.</p>
+                        <p><strong>Benefits:</strong> Increased horsepower and torque, better fuel economy, improved throttle response, and customized performance profiles.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-service="airbag-srs">
+                    <div class="service-header">
+                        <div class="service-icon">🛡️</div>
+                        <h3 class="service-title">AIRBAG SRS Programming</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Airbag and Supplemental Restraint System programming and reset.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Resets airbag modules after deployment, clears SRS error codes, and programs new airbag modules to your vehicle.</p>
+                        <p><strong>Benefits:</strong> Restores airbag functionality, clears warning lights, ensures safety system compliance, and saves on expensive dealer repairs.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-service="diagnosis">
+                    <div class="service-header">
+                        <div class="service-icon">🔍</div>
+                        <h3 class="service-title">Diagnosis Machine & Repair</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Advanced vehicle diagnostics and comprehensive repair services.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Uses professional diagnostic equipment to identify vehicle problems, read error codes, and perform comprehensive system checks.</p>
+                        <p><strong>Benefits:</strong> Accurate problem identification, faster repairs, cost-effective solutions, and prevents unnecessary part replacements.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-service="ecu-immo">
+                    <div class="service-header">
+                        <div class="service-icon">🔐</div>
+                        <h3 class="service-title">ECU IMMO Off</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Immobilizer removal and ECU modification services.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Removes the immobilizer system from your ECU, allowing the vehicle to start without the original key or immobilizer module.</p>
+                        <p><strong>Benefits:</strong> Vehicle can start without original keys, useful for ECU swaps, eliminates immobilizer-related starting issues, and enables keyless operation.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-service="alarms-tracking">
+                    <div class="service-header">
+                        <div class="service-icon">🚨</div>
+                        <h3 class="service-title">Car Alarms & Tracking</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Car alarm installation and GPS tracking system services.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Installs advanced car alarm systems with motion sensors, shock sensors, and GPS tracking devices for vehicle security and recovery.</p>
+                        <p><strong>Benefits:</strong> Enhanced vehicle security, real-time location tracking, theft prevention, remote monitoring via smartphone, and peace of mind.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-service="steering-sensor">
+                    <div class="service-header">
+                        <div class="service-icon">📐</div>
+                        <h3 class="service-title">Steering Angle Sensor</h3>
+                        <button class="service-toggle" aria-label="Toggle service details">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="service-description">Steering angle sensor calibration and programming services.</p>
+                    <div class="service-details">
+                        <p><strong>What it does:</strong> Calibrates and programs steering angle sensors after replacement or repairs, ensuring proper ABS, ESP, and stability control functionality.</p>
+                        <p><strong>Benefits:</strong> Restores safety systems, clears warning lights, ensures proper vehicle handling, and maintains electronic stability control.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 class="section-title">About TOM TECH AUTOCARE</h2>
+                    <p class="about-description">
+                        TOM TECH AUTOCARE LIMITED is your trusted partner for professional ECU programming and automotive electronics services. With extensive expertise in Engine Control Unit repair, tuning, and programming, we specialize in advanced automotive diagnostics and electronic solutions.
+                    </p>
+                    <p class="about-description">
+                        Our team of skilled technicians is committed to delivering exceptional service for all vehicle makes and models. From ECU tuning and programming to DPF/EGR delete services, we provide reliable and efficient solutions to keep your vehicle performing at its best.
+                    </p>
+                    <div class="about-features">
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Expert Technicians</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Quality Products</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Fast Service</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Competitive Prices</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <div class="image-placeholder">
+                        <div class="placeholder-content">
+                            <img src="images/wallpaper/mechanic.jpg" alt="Professional Mechanic" class="mechanic-image">
+                            <p>Automotive Excellence</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Get In Touch</h2>
+                <p class="section-subtitle">Contact us today for a quote or to schedule a service</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-details">
+                            <h3>Visit Us</h3>
+                            <p>ALONG PARKROAD, NEAR BLUEHUT HOTEL<br>OPP MUSLIM ACADEMY, NGARA</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div class="contact-details">
+                            <h3>Call Us</h3>
+                            <p>0702466009<br>0720466009</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">✉️</div>
+                        <div class="contact-details">
+                            <h3>Email Us</h3>
+                            <p>TOMTECHAUTOCARE@GMAIL.COM</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🕒</div>
+                        <div class="contact-details">
+                            <h3>Business Hours</h3>
+                            <p>Mon - Sat: 8:00 AM - 6:00 PM<br>Sunday: By Appointment</p>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form">
+                    <div class="form-group">
+                        <input type="text" class="form-input" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-input" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" class="form-input" placeholder="Your Phone">
+                    </div>
+                    <div class="form-group">
+                        <select class="form-input" required>
+                            <option value="">Select Service</option>
+                            <option value="car-key-programming">Car Key Programming</option>
+                            <option value="ecu-repair">Car ECU Repair</option>
+                            <option value="dpf-delete">DPF Delete</option>
+                            <option value="egr-delete">EGR Delete</option>
+                            <option value="adblue-delete">Adblue Delete</option>
+                            <option value="ecu-programming">ECU Programming</option>
+                            <option value="ecu-tuning">ECU Tuning</option>
+                            <option value="airbag-srs">AIRBAG SRS Programming</option>
+                            <option value="diagnosis">Diagnosis Machine & Repair</option>
+                            <option value="ecu-immo">ECU IMMO Off</option>
+                            <option value="alarms-tracking">Car Alarms & Tracking</option>
+                            <option value="steering-sensor">Steering Angle Sensor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-input" rows="5" placeholder="Your Message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <img src="images/WhatsApp Image 2025-12-30 at 11.29.12_e0fbb605.jpg" alt="TOM TECH AUTOCARE Logo" class="footer-logo">
+                        <div class="brand-name-wrapper">
+                            <span class="brand-name">TOM TECH</span>
+                            <span class="brand-subtitle">AUTOCARE LIMITED</span>
+                        </div>
+                    </div>
+                    <p class="footer-description">Your trusted partner for ECU programming and automotive electronics services.</p>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#services">ECU Programming</a></li>
+                        <li><a href="#services">ECU Tuning</a></li>
+                        <li><a href="#services">DPF/EGR Delete</a></li>
+                        <li><a href="#services">Car Key Programming</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">Contact Info</h3>
+                    <ul class="footer-contact">
+                        <li>📍 ALONG PARKROAD, NEAR BLUEHUT HOTEL<br>OPP MUSLIM ACADEMY, NGARA</li>
+                        <li>📞 0702466009 / 0720466009</li>
+                        <li>✉️ TOMTECHAUTOCARE@GMAIL.COM</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 TOM TECH AUTOCARE LIMITED. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>Shopping Cart</h2>
+            <button class="cart-close" id="cartClose">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p class="cart-empty">Your cart is empty</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">KES 0</span>
+            </div>
+            <div class="cart-actions">
+                <button class="btn btn-secondary btn-full" id="saveCartBtn" onclick="saveCartForLater()">Save for Later</button>
+                <button class="btn btn-primary btn-full" id="checkoutBtn" onclick="checkoutToWhatsApp()">Order via WhatsApp</button>
+            </div>
+            <div class="cart-saved-info" id="cartSavedInfo" style="display: none;">
+                <p>Cart saved! You can retrieve it later.</p>
+            </div>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <!-- Product Detail Modal -->
+    <div class="product-modal-overlay" id="productModalOverlay">
+        <div class="product-modal" id="productModal">
+            <button class="product-modal-close" id="productModalClose">&times;</button>
+            <div class="product-modal-content">
+                <div class="product-modal-image-section">
+                    <img id="productModalImage" src="" alt="" class="product-modal-main-image">
+                    <div class="product-modal-thumbnails" id="productModalThumbnails"></div>
+                </div>
+                <div class="product-modal-info">
+                    <h2 id="productModalName" class="product-modal-name"></h2>
+                    <div class="product-modal-availability" id="productModalAvailability"></div>
+                    <div class="product-modal-price" id="productModalPrice"></div>
+                    <p class="product-modal-description" id="productModalDescription"></p>
+                    <div class="product-modal-details" id="productModalDetails"></div>
+                    <div class="product-modal-actions">
+                        <button class="btn btn-primary" id="productModalAddToCart">Add to Cart</button>
+                        <button class="btn btn-secondary" id="productModalBuyNow">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Booking Modal -->
+    <div class="booking-modal" id="bookingModal">
+        <div class="booking-content">
+            <div class="booking-header">
+                <h2>Book a Service</h2>
+                <button class="booking-close" id="bookingClose">&times;</button>
+            </div>
+            <form class="booking-form" id="bookingForm">
+                <div class="form-group">
+                    <label>Service Type</label>
+                    <select class="form-input" id="bookingService" required>
+                        <option value="">Select Service</option>
+                        <option value="car-key-programming">Car Key Programming</option>
+                        <option value="ecu-repair">Car ECU Repair</option>
+                        <option value="dpf-delete">DPF Delete</option>
+                        <option value="egr-delete">EGR Delete</option>
+                        <option value="adblue-delete">Adblue Delete</option>
+                        <option value="ecu-programming">ECU Programming</option>
+                        <option value="ecu-tuning">ECU Tuning</option>
+                        <option value="airbag-srs">AIRBAG SRS Programming</option>
+                        <option value="diagnosis">Diagnosis Machine & Repair</option>
+                        <option value="ecu-immo">ECU IMMO Off</option>
+                        <option value="alarms-tracking">Car Alarms & Tracking</option>
+                        <option value="steering-sensor">Steering Angle Sensor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" class="form-input" id="bookingName" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" class="form-input" id="bookingPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>Vehicle Make & Model</label>
+                    <input type="text" class="form-input" id="bookingVehicle" required>
+                </div>
+                <div class="form-group">
+                    <label>Preferred Date</label>
+                    <input type="date" class="form-input" id="bookingDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Additional Notes</label>
+                    <textarea class="form-input" id="bookingNotes" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Book Service</button>
+            </form>
+        </div>
+    </div>
+    <div class="booking-overlay" id="bookingOverlay"></div>
+
+    <!-- Floating WhatsApp Button -->
+    <div class="whatsapp-float" id="whatsappFloat" onclick="openWhatsApp()">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" fill="currentColor"/>
+        </svg>
+        <span class="whatsapp-tooltip">Chat with us on WhatsApp</span>
+    </div>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header" onclick="toggleChatbot()">
+            <div class="chatbot-header-content">
+                <div class="chatbot-avatar">🤖</div>
+                <div class="chatbot-info">
+                    <h3>Tom</h3>
+                    <p class="chatbot-status">Online</p>
+                </div>
+            </div>
+            <button class="chatbot-close" onclick="toggleChatbot()">&times;</button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="chatbot-message bot-message">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <p>Hello! I'm Tom from TOM TECH AUTOCARE. How can I help you today?</p>
+                </div>
+            </div>
+        </div>
+        <div class="chatbot-input-container">
+            <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your message..." onkeypress="handleChatbotKeyPress(event)">
+            <button class="chatbot-send" onclick="sendChatbotMessage()">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div class="chatbot-toggle" id="chatbotToggle" onclick="toggleChatbot()">
+        <div class="chatbot-toggle-icon">🤖</div>
+        <span class="chatbot-toggle-text">Chat with Tom</span>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <!-- Firebase Config - Replace with your actual config from Firebase Console -->
+    <script>
+        // Add your Firebase config here (get it from Firebase Console → Project Settings)
+        // Example (replace with your actual config):
+        window.FIREBASE_CONFIG = {
+            "apiKey": "AIzaSyDSqdYUwCLC5_pyajNWjynMd_19hs3ySXg",
+            "authDomain": "tomtech-51bcc.firebaseapp.com",
+            "databaseURL": "https://tomtech-51bcc-default-rtdb.firebaseio.com",
+            "projectId": "tomtech-51bcc",
+            "storageBucket": "tomtech-51bcc.firebasestorage.app",
+            "messagingSenderId": "327251258228",
+            "appId": "1:327251258228:web:4c5d075366a1d5a42fda21"
+        };
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
+
