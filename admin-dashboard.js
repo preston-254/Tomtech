@@ -200,13 +200,44 @@ function initializeDefaultProducts() {
     return defaultProducts;
 }
 
+// Strip base64 image data so payload fits in localStorage (keeps paths only)
+function slimProductsForStorage(products) {
+    return products.map(p => {
+        const slim = { ...p };
+        if (slim.image && typeof slim.image === 'string' && slim.image.startsWith('data:')) {
+            slim.image = 'images/placeholder.jpg';
+        }
+        if (Array.isArray(slim.images)) {
+            slim.images = slim.images.map(src =>
+                typeof src === 'string' && src.startsWith('data:') ? 'images/placeholder.jpg' : src
+            );
+        }
+        return slim;
+    });
+}
+
 // Save products to both localStorage and cloud (Firebase)
 async function saveProducts(products) {
-    // Save to localStorage immediately (for offline access)
-    localStorage.setItem('tomtechProducts', JSON.stringify(products));
-    localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
-    
-    // Also save to Firebase for cross-device sync
+    // Save to localStorage (for offline access). If quota exceeded, save slim version without base64 images.
+    try {
+        localStorage.setItem('tomtechProducts', JSON.stringify(products));
+        localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
+    } catch (e) {
+        if (e.name === 'QuotaExceededError' || e.code === 22) {
+            console.warn('⚠️ Local storage full (images too large). Saving slim copy and syncing to Firebase.');
+            try {
+                const slim = slimProductsForStorage(products);
+                localStorage.setItem('tomtechProducts', JSON.stringify(slim));
+                localStorage.setItem('tomtechProductsLastUpdate', Date.now().toString());
+            } catch (e2) {
+                console.warn('⚠️ Could not save to local storage. Firebase will be the source of truth.');
+            }
+        } else {
+            throw e;
+        }
+    }
+
+    // Also save to Firebase for cross-device sync (full data including base64 if any)
     try {
         const synced = await saveToFirebase(products);
         if (synced) {
